@@ -221,7 +221,7 @@ func (publication *Publication) FindFirstLinkByRel(rel string) Link {
 func (publication *Publication) FindFirstLinkByType(mt string) Link {
 	for _, l := range publication.Links {
 		if strings.Contains(l.TypeLink, mt) {
-			return link
+			return l
 		}
 	}
 	return Link{}
