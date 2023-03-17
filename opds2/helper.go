@@ -204,18 +204,18 @@ func NewPublicationMetadata() PublicationMetadata {
 	}
 }
 
-func NewContributor(names ...string) op.Contributor {
+func NewContributor(names ...string) Contributor {
 	var name MultiLanguage
 	if len(names) == 1 {
-		name := MultiLanguage{
+		name = MultiLanguage{
 			SingleString: names[0],
 		}
 	}
-	return op.Contributor{Name: name}
+	return Contributor{Name: name}
 }
 
-func NewCollection(name string) op.Collection {
-	return op.Collection{
+func NewCollection(name string) Collection {
+	return Collection{
 		Name: name,
 	}
 }
@@ -257,7 +257,7 @@ func (c Collections) String() string {
 	return strings.Join(c.StringSlice(), ", ")
 }
 
-func (s Collections) StringSlice() []string {
+func (s Subjects) StringSlice() []string {
 	var subs []string
 	for _, sub := range s {
 		subs = append(subs, sub.Name)
@@ -265,7 +265,7 @@ func (s Collections) StringSlice() []string {
 	return subs
 }
 
-func (s Collections) String() string {
+func (s Subjects) String() string {
 	return strings.Join(s.StringSlice(), ", ")
 }
 
