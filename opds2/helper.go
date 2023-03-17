@@ -1,12 +1,11 @@
 package opds2
 
+import "strings"
+
 // AddLink add a new link in feed information
 // at minimum the self link
 func (feed *Feed) AddLink(href string, rel string, typeLink string, templated bool) {
-	var l Link
-
-	l.Href = href
-	l.Rel = append(l.Rel, rel)
+	l := NewLink(href, rel)
 	l.TypeLink = typeLink
 	if templated == true {
 		l.Templated = true
@@ -17,9 +16,8 @@ func (feed *Feed) AddLink(href string, rel string, typeLink string, templated bo
 
 // AddImage add a image link to Publication
 func (publication *Publication) AddImage(href string, typeImage string, height int, width int) {
-	var i Link
+	i := NewLink(href)
 
-	i.Href = href
 	i.TypeLink = typeImage
 	if height > 0 {
 		i.Height = height
@@ -33,13 +31,9 @@ func (publication *Publication) AddImage(href string, typeImage string, height i
 
 // AddLink add a new link to the publication
 func (publication *Publication) AddLink(href string, typeLink string, rel string, title string) {
-	var l Link
+	l := NewLink(href, rel)
 
-	l.Href = href
 	l.TypeLink = typeLink
-	if rel != "" {
-		l.Rel = append(l.Rel, rel)
-	}
 	if title != "" {
 		l.Title = title
 	}
@@ -50,7 +44,7 @@ func (publication *Publication) AddLink(href string, typeLink string, rel string
 // AddAuthor add author to publication with all parameters mostly optional
 func (publication *Publication) AddAuthor(name string, identifier string, sortAs string, href string, typeLink string) {
 	var c Contributor
-	var l Link
+	l := NewLink(href)
 
 	c.Name.SingleString = name
 	if identifier != "" {
@@ -58,9 +52,6 @@ func (publication *Publication) AddAuthor(name string, identifier string, sortAs
 	}
 	if sortAs != "" {
 		c.SortAs = sortAs
-	}
-	if href != "" {
-		l.Href = href
 	}
 	if typeLink != "" {
 		l.TypeLink = typeLink
@@ -76,7 +67,7 @@ func (publication *Publication) AddAuthor(name string, identifier string, sortAs
 // AddSerie add serie to publication
 func (publication *Publication) AddSerie(name string, position float32, href string, typeLink string) {
 	var c Collection
-	var l Link
+	l := NewLink(href)
 
 	c.Name = name
 	c.Position = position
@@ -89,10 +80,6 @@ func (publication *Publication) AddSerie(name string, position float32, href str
 		l.TypeLink = typeLink
 	}
 
-	if href != "" {
-		l.Href = href
-	}
-
 	if l.Href != "" {
 		c.Links = append(c.Links, l)
 	}
@@ -103,16 +90,12 @@ func (publication *Publication) AddSerie(name string, position float32, href str
 // AddPublisher add publisher to publication
 func (publication *Publication) AddPublisher(name string, href string, typeLink string) {
 	var c Contributor
-	var l Link
+	l := NewLink(href)
 
 	c.Name.SingleString = name
 
 	if typeLink != "" {
 		l.TypeLink = typeLink
-	}
-
-	if href != "" {
-		l.Href = href
 	}
 
 	if l.Href != "" {
@@ -124,11 +107,9 @@ func (publication *Publication) AddPublisher(name string, href string, typeLink 
 
 // AddNavigation add navigation element in feed
 func (feed *Feed) AddNavigation(title string, href string, rel string, typeLink string) {
-	var l Link
+	l := NewLink(href, rel)
 
-	l.Href = href
 	l.TypeLink = typeLink
-	l.Rel = append(l.Rel, rel)
 	if title != "" {
 		l.Title = title
 	}
@@ -209,4 +190,93 @@ func (feed *Feed) AddNavigationInGroup(link Link, collLink Link) {
 	group.Navigation = append(group.Navigation, link)
 	group.Links = append(group.Links, Link{Rel: []string{"self"}, Title: collLink.Title, Href: collLink.Href})
 	feed.Groups = append(feed.Groups, group)
+}
+
+func NewPublication() Publication {
+	return Publication{
+		Metadata: NewPublicationMetadata(),
+	}
+}
+
+func NewPublicationMetadata() PublicationMetadata {
+	return PublicationMetadata{
+		BelongsTo: &BelongsTo{},
+	}
+}
+
+func NewContributor(names ...string) op.Contributor {
+	var name MultiLanguage
+	if len(names) == 1 {
+		name := MultiLanguage{
+			SingleString: names[0],
+		}
+	}
+	return op.Contributor{Name: name}
+}
+
+func NewCollection(name string) op.Collection {
+	return op.Collection{
+		Name: name,
+	}
+}
+
+func NewLink(href string, rel ...string) Link {
+	return Link{
+		Href: href,
+		Rel:  rel,
+	}
+}
+
+func NewSubject(name string) Subject {
+	return Subject{
+		Name: name,
+	}
+}
+
+func (c Contributors) StringSlice() []string {
+	var cons []string
+	for _, con := range c {
+		cons = append(cons, con.Name.String())
+	}
+	return cons
+}
+
+func (c Contributors) String() string {
+	return strings.Join(c.StringSlice(), " & ")
+}
+
+func (c Collections) StringSlice() []string {
+	var cols []string
+	for _, col := range c {
+		cols = append(cols, col.Name)
+	}
+	return cols
+}
+
+func (c Collections) String() string {
+	return strings.Join(c.StringSlice(), ", ")
+}
+
+func (s Collections) StringSlice() []string {
+	var subs []string
+	for _, sub := range s {
+		subs = append(subs, sub.Name)
+	}
+	return subs
+}
+
+func (s Collections) String() string {
+	return strings.Join(s.StringSlice(), ", ")
+}
+
+func (l Links) StringSlice() []string {
+	var links []string
+	for _, link := range l {
+		links = append(links, link.Href)
+	}
+	return links
+}
+
+func (l Links) String() string {
+	return strings.Join(l.StringSlice(), ", ")
 }

@@ -4,6 +4,7 @@ package opds2
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 )
 
@@ -195,8 +196,18 @@ func (r StringOrArray) MarshalJSON() ([]byte, error) {
 	return json.Marshal(r)
 }
 
-func (publication *Publication) FindFirstLinkByRel(rel string) Link {
+func (publication *Publication) FindFirstImageByRel(rel string) Link {
+	for _, l := range publication.Images {
+		for _, r := range l.Rel {
+			if r == rel {
+				return l
+			}
+		}
+	}
+	return Link{}
+}
 
+func (publication *Publication) FindFirstLinkByRel(rel string) Link {
 	for _, l := range publication.Links {
 		for _, r := range l.Rel {
 			if r == rel {
@@ -204,7 +215,15 @@ func (publication *Publication) FindFirstLinkByRel(rel string) Link {
 			}
 		}
 	}
+	return Link{}
+}
 
+func (publication *Publication) FindFirstLinkByType(mt string) Link {
+	for _, l := range publication.Links {
+		if strings.Contains(l.TypeLink, mt) {
+			return link
+		}
+	}
 	return Link{}
 }
 
