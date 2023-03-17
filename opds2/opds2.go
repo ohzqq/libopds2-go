@@ -11,18 +11,18 @@ import (
 type Feed struct {
 	Context      []string      `json:"@context,omitempty"`
 	Metadata     Metadata      `json:"metadata"`
-	Links        []Link        `json:"links"`
+	Links        Links         `json:"links"`
 	Facets       []Facet       `json:"facets,omitempty"`
 	Groups       []Group       `json:"groups,omitempty"`
 	Publications []Publication `json:"publications,omitempty"`
-	Navigation   []Link        `json:"navigation,omitempty"`
+	Navigation   Links         `json:"navigation,omitempty"`
 }
 
 // Publication is a collection for a given publication
 type Publication struct {
 	Metadata PublicationMetadata `json:"metadata"`
-	Links    []Link              `json:"links"`
-	Images   []Link              `json:"images"`
+	Links    Links               `json:"links"`
+	Images   Links               `json:"images"`
 }
 
 // Metadata has a limited subset of metadata compared to a publication
@@ -38,16 +38,19 @@ type Metadata struct {
 // Facet is a collection that contains a facet group
 type Facet struct {
 	Metadata Metadata `json:"metadata"`
-	Links    []Link   `json:"links"`
+	Links    Links    `json:"links"`
 }
 
 // Group is a group collection that must contain publications
 type Group struct {
 	Metadata     Metadata      `json:"metadata"`
-	Links        []Link        `json:"links,omitempty"`
+	Links        Links         `json:"links,omitempty"`
 	Publications []Publication `json:"publications,omitempty"`
-	Navigation   []Link        `json:"navigation,omitempty"`
+	Navigation   Links         `json:"navigation,omitempty"`
 }
+
+// Links used in collections and links
+type Links []Link
 
 // Link object used in collections and links
 type Link struct {
@@ -60,7 +63,7 @@ type Link struct {
 	Properties *Properties `json:"properties,omitempty"`
 	Duration   string      `json:"duration,omitempty"`
 	Templated  bool        `json:"templated,omitempty"`
-	Children   []Link      `json:"children,omitempty"`
+	Children   Links       `json:"children,omitempty"`
 	Bitrate    int         `json:"bitrate,omitempty"`
 }
 
@@ -89,29 +92,32 @@ type PublicationMetadata struct {
 	RDFType         string        `json:"@type,omitempty"` //Defaults to schema.org for EBook
 	Title           MultiLanguage `json:"title"`
 	Identifier      string        `json:"identifier"`
-	Author          []Contributor `json:"author,omitempty"`
-	Translator      []Contributor `json:"translator,omitempty"`
-	Editor          []Contributor `json:"editor,omitempty"`
-	Artist          []Contributor `json:"artist,omitempty"`
-	Illustrator     []Contributor `json:"illustrator,omitempty"`
-	Letterer        []Contributor `json:"letterer,omitempty"`
-	Penciler        []Contributor `json:"penciler,omitempty"`
-	Colorist        []Contributor `json:"colorist,omitempty"`
-	Inker           []Contributor `json:"inker,omitempty"`
-	Narrator        []Contributor `json:"narrator,omitempty"`
-	Contributor     []Contributor `json:"contributor,omitempty"`
-	Publisher       []Contributor `json:"publisher,omitempty"`
-	Imprint         []Contributor `json:"imprint,omitempty"`
+	Author          Contributors  `json:"author,omitempty"`
+	Translator      Contributors  `json:"translator,omitempty"`
+	Editor          Contributors  `json:"editor,omitempty"`
+	Artist          Contributors  `json:"artist,omitempty"`
+	Illustrator     Contributors  `json:"illustrator,omitempty"`
+	Letterer        Contributors  `json:"letterer,omitempty"`
+	Penciler        Contributors  `json:"penciler,omitempty"`
+	Colorist        Contributors  `json:"colorist,omitempty"`
+	Inker           Contributors  `json:"inker,omitempty"`
+	Narrator        Contributors  `json:"narrator,omitempty"`
+	Contributor     Contributors  `json:"contributor,omitempty"`
+	Publisher       Contributors  `json:"publisher,omitempty"`
+	Imprint         Contributors  `json:"imprint,omitempty"`
 	Language        []string      `json:"language,omitempty"`
 	Modified        *time.Time    `json:"modified,omitempty"`
 	PublicationDate *time.Time    `json:"published,omitempty"`
 	Description     string        `json:"description,omitempty"`
 	Source          string        `json:"source,omitempty"`
 	Rights          string        `json:"rights,omitempty"`
-	Subject         []Subject     `json:"subject,omitempty"`
+	Subject         Subjects      `json:"subject,omitempty"`
 	BelongsTo       *BelongsTo    `json:"belongs_to,omitempty"`
 	Duration        int           `json:"duration,omitempty"`
 }
+
+// Contributor Slice
+type Contributors []Contributor
 
 // Contributor construct used internally for all contributors
 type Contributor struct {
@@ -119,8 +125,11 @@ type Contributor struct {
 	SortAs     string        `json:"sort_as,omitempty"`
 	Identifier string        `json:"identifier,omitempty"`
 	Role       string        `json:"role,omitempty"`
-	Links      []Link        `json:"links,omitempty"`
+	Links      Links         `json:"links,omitempty"`
 }
+
+// Subject Slice
+type Subjects []Subject
 
 // Subject as based on EPUB 3.1 and WebPub
 type Subject struct {
@@ -132,9 +141,12 @@ type Subject struct {
 
 // BelongsTo is a list of collections/series that a publication belongs to
 type BelongsTo struct {
-	Series     []Collection `json:"series,omitempty"`
-	Collection []Collection `json:"collection,omitempty"`
+	Series     Collections `json:"series,omitempty"`
+	Collection Collections `json:"collection,omitempty"`
 }
+
+// Collections Slice
+type Collections []Collection
 
 // Collection construct used for collection/serie metadata
 type Collection struct {
@@ -142,10 +154,10 @@ type Collection struct {
 	SortAs     string  `json:"sort_as,omitempty"`
 	Identifier string  `json:"identifier,omitempty"`
 	Position   float32 `json:"position,omitempty"`
-	Links      []Link  `json:"links,omitempty"`
+	Links      Links   `json:"links,omitempty"`
 }
 
-// MultiLanguage store the a basic string when we only have one lang
+// MultiLanguage store a basic string when we only have one lang
 // Store in a hash by language for multiple string representation
 type MultiLanguage struct {
 	SingleString string
@@ -183,7 +195,7 @@ func (r StringOrArray) MarshalJSON() ([]byte, error) {
 	return json.Marshal(r)
 }
 
-func (publication *Publication) findFirstLinkByRel(rel string) Link {
+func (publication *Publication) FindFirstLinkByRel(rel string) Link {
 
 	for _, l := range publication.Links {
 		for _, r := range l.Rel {
