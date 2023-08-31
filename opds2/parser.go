@@ -402,23 +402,33 @@ func parsePublicationMetadata(metadata *PublicationMetadata, data interface{}) {
 		case "rights":
 			metadata.Rights = v.(string)
 		case "subject":
-			infoS := v.([]interface{})
-			for _, sub := range infoS {
+			switch data := v.(type) {
+			case string:
 				s := Subject{}
-				subject := sub.(map[string]interface{})
-				for ks, vs := range subject {
-					switch ks {
-					case "name":
-						s.Name = vs.(string)
-					case "sort_as":
-						s.SortAs = vs.(string)
-					case "scheme":
-						s.Scheme = vs.(string)
-					case "code":
-						s.Code = vs.(string)
-					}
-				}
+				s.Name = data
 				metadata.Subject = append(metadata.Subject, s)
+			case []any:
+				for _, subject := range data {
+					s := Subject{}
+					switch sub := subject.(type) {
+					case string:
+						s.Name = sub
+					case map[string]any:
+						for ks, vs := range sub {
+							switch ks {
+							case "name":
+								s.Name = vs.(string)
+							case "sort_as":
+								s.SortAs = vs.(string)
+							case "scheme":
+								s.Scheme = vs.(string)
+							case "code":
+								s.Code = vs.(string)
+							}
+						}
+					}
+					metadata.Subject = append(metadata.Subject, s)
+				}
 			}
 		case "belongs_to":
 			belong := BelongsTo{}
