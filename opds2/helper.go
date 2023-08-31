@@ -101,16 +101,6 @@ func (feed *Feed) AddNavigationInGroup(link *Link, collLink *Link) {
 	feed.Groups = append(feed.Groups, group)
 }
 
-func NewContributor(names ...string) Contributor {
-	var name MultiLanguage
-	if len(names) == 1 {
-		name = MultiLanguage{
-			SingleString: names[0],
-		}
-	}
-	return Contributor{Name: name}
-}
-
 func NewCollection(name string) Collection {
 	return Collection{
 		Name: name,
@@ -121,18 +111,6 @@ func NewSubject(name string) Subject {
 	return Subject{
 		Name: name,
 	}
-}
-
-func (c Contributors) StringSlice() []string {
-	var cons []string
-	for _, con := range c {
-		cons = append(cons, con.Name.String())
-	}
-	return cons
-}
-
-func (c Contributors) String() string {
-	return strings.Join(c.StringSlice(), " & ")
 }
 
 func (c Collections) StringSlice() []string {

@@ -66,26 +66,10 @@ func (publication *Publication) AddLink(href string) *Link {
 }
 
 // AddContributor adds a contributor to publication with all parameters mostly optional
-func (publication *Publication) AddAuthor(name string, identifier string, sortAs string, href string, typeLink string) {
-	var c Contributor
-	l := NewLink(href)
-
-	c.Name.SingleString = name
-	if identifier != "" {
-		c.Identifier = identifier
-	}
-	if sortAs != "" {
-		c.SortAs = sortAs
-	}
-	if typeLink != "" {
-		l.TypeLink = typeLink
-	}
-
-	if l.Href != "" {
-		c.Links = append(c.Links, l)
-	}
-
+func (publication *Publication) AddAuthor(name string) *Contributor {
+	c := NewContributor(name)
 	publication.Metadata.Author = append(publication.Metadata.Author, c)
+	return c
 }
 
 // AddSerie add serie to publication
@@ -112,19 +96,8 @@ func (publication *Publication) AddSerie(name string, position float32, href str
 }
 
 // AddPublisher add publisher to publication
-func (publication *Publication) AddPublisher(name string, href string, typeLink string) {
-	var c Contributor
-	l := NewLink(href)
-
-	c.Name.SingleString = name
-
-	if typeLink != "" {
-		l.TypeLink = typeLink
-	}
-
-	if l.Href != "" {
-		c.Links = append(c.Links, l)
-	}
-
+func (publication *Publication) AddPublisher(name string) *Contributor {
+	c := NewContributor(name)
 	publication.Metadata.Publisher = append(publication.Metadata.Publisher, c)
+	return c
 }

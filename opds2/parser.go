@@ -3,7 +3,7 @@ package opds2
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"strconv"
@@ -22,7 +22,7 @@ func ParseURL(url string) (*Feed, error) {
 		return nil, errReq
 	}
 
-	buff, errRead := ioutil.ReadAll(res.Body)
+	buff, errRead := io.ReadAll(res.Body)
 	if errRead != nil {
 		return nil, errRead
 	}
@@ -42,7 +42,7 @@ func ParseFile(filePath string) (*Feed, error) {
 	if err != nil {
 		return &Feed{}, err
 	}
-	buff, errRead := ioutil.ReadAll(f)
+	buff, errRead := io.ReadAll(f)
 	if err != nil {
 		return &Feed{}, errRead
 	}
@@ -390,6 +390,14 @@ func parsePublicationMetadata(metadata *PublicationMetadata, data interface{}) {
 				metadata.Imprint = append(metadata.Imprint, cont)
 			}
 		case "language":
+			switch vb := v.(type) {
+			case string:
+				metadata.Language = append(metadata.Language, vb)
+			case []interface{}:
+				for _, colls := range vb {
+					metadata.Language = append(metadata.Language, colls.(string))
+				}
+			}
 		case "published":
 			t, err := time.Parse(time.RFC3339, v.(string))
 			if err == nil {
@@ -486,12 +494,12 @@ func parseCollection(data interface{}) Collection {
 	return collection
 }
 
-func parseContributors(data interface{}) []Contributor {
-	var c []Contributor
+func parseContributors(data interface{}) []*Contributor {
+	var c []*Contributor
 
 	switch data.(type) {
 	case string:
-		cont := Contributor{}
+		cont := &Contributor{}
 		cont.Name.SingleString = data.(string)
 		c = append(c, cont)
 	case []interface{}:
@@ -507,8 +515,8 @@ func parseContributors(data interface{}) []Contributor {
 	return c
 }
 
-func parseContributor(data interface{}) Contributor {
-	var c Contributor
+func parseContributor(data interface{}) *Contributor {
+	c := &Contributor{}
 
 	info := data.(map[string]interface{})
 	for k, v := range info {

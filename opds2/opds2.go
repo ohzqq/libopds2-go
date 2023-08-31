@@ -63,18 +63,6 @@ type Price struct {
 	Value    float64 `json:"value"`
 }
 
-// Contributor Slice
-type Contributors []Contributor
-
-// Contributor construct used internally for all contributors
-type Contributor struct {
-	Name       MultiLanguage `json:"name,omitempty"`
-	SortAs     string        `json:"sort_as,omitempty"`
-	Identifier string        `json:"identifier,omitempty"`
-	Role       string        `json:"role,omitempty"`
-	Links      Links         `json:"links,omitempty"`
-}
-
 // Subject Slice
 type Subjects []Subject
 
