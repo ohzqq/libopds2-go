@@ -505,19 +505,24 @@ func ParseCollection(data interface{}) Collection {
 func ParseContributors(data interface{}) []Contributor {
 	var c []Contributor
 
-	switch data.(type) {
+	switch d := data.(type) {
 	case string:
 		cont := Contributor{}
-		cont.Name.SingleString = data.(string)
+		cont.Name.SingleString = d
 		c = append(c, cont)
+	case []string:
+		for _, i := range d {
+			cont := Contributor{}
+			cont.Name.SingleString = d
+			c = append(c, cont)
+		}
 	case []interface{}:
-		infoA := data.([]interface{})
-		for _, i := range infoA {
+		for _, i := range d {
 			cont := ParseContributor(i)
 			c = append(c, cont)
 		}
 	case interface{}:
-		cont := ParseContributor(data)
+		cont := ParseContributor(d)
 		c = append(c, cont)
 	}
 	return c
