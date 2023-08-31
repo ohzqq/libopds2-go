@@ -55,40 +55,17 @@ func NewPublicationMetadata(title MultiLanguage) PublicationMetadata {
 func (publication *Publication) AddImage(href string) *Link {
 	i := NewLink(href)
 	publication.Images = append(publication.Images, i)
-	return &i
+	return i
 }
 
 // AddLink add a new link to the publication
 func (publication *Publication) AddLink(href string) *Link {
-	l := NewLink(href, rel)
+	l := NewLink(href)
 	publication.Links = append(publication.Links, l)
-	return &l
+	return l
 }
 
 // AddContributor adds a contributor to publication with all parameters mostly optional
-func (publication *Publication) AddAuthor(name string, identifier string, sortAs string, href string, typeLink string) {
-	var c Contributor
-	l := NewLink(href)
-
-	c.Name.SingleString = name
-	if identifier != "" {
-		c.Identifier = identifier
-	}
-	if sortAs != "" {
-		c.SortAs = sortAs
-	}
-	if typeLink != "" {
-		l.TypeLink = typeLink
-	}
-
-	if l.Href != "" {
-		c.Links = append(c.Links, l)
-	}
-
-	publication.Metadata.Author = append(publication.Metadata.Author, c)
-}
-
-// AddAuthor add author to publication with all parameters mostly optional
 func (publication *Publication) AddAuthor(name string, identifier string, sortAs string, href string, typeLink string) {
 	var c Contributor
 	l := NewLink(href)

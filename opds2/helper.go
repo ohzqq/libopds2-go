@@ -5,7 +5,7 @@ import "strings"
 // AddLink add a new link in feed information
 // at minimum the self link
 func (feed *Feed) AddLink(href string, rel string, typeLink string, templated bool) {
-	l := NewLink(href, rel)
+	l := NewLink(href)
 	l.TypeLink = typeLink
 	if templated == true {
 		l.Templated = true
@@ -16,7 +16,7 @@ func (feed *Feed) AddLink(href string, rel string, typeLink string, templated bo
 
 // AddNavigation add navigation element in feed
 func (feed *Feed) AddNavigation(title string, href string, rel string, typeLink string) {
-	l := NewLink(href, rel)
+	l := NewLink(href)
 
 	l.TypeLink = typeLink
 	if title != "" {
@@ -48,7 +48,7 @@ func (feed *Feed) AddPagination(numberItems int, itemsPerPage int, currentPage i
 }
 
 // AddFacet add link to facet handler multiple add
-func (feed *Feed) AddFacet(link Link, group string) {
+func (feed *Feed) AddFacet(link *Link, group string) {
 	var facet Facet
 
 	for i, f := range feed.Facets {
@@ -64,7 +64,7 @@ func (feed *Feed) AddFacet(link Link, group string) {
 }
 
 // AddPublicationInGroup smart adding of publication in Group
-func (feed *Feed) AddPublicationInGroup(publication Publication, collLink Link) {
+func (feed *Feed) AddPublicationInGroup(publication Publication, collLink *Link) {
 	var group Group
 
 	for i, g := range feed.Groups {
@@ -78,12 +78,12 @@ func (feed *Feed) AddPublicationInGroup(publication Publication, collLink Link) 
 
 	group.Metadata.Title = collLink.Title
 	group.Publications = append(group.Publications, publication)
-	group.Links = append(group.Links, Link{Rel: []string{"self"}, Title: collLink.Title, Href: collLink.Href})
+	group.Links = append(group.Links, &Link{Rel: []string{"self"}, Title: collLink.Title, Href: collLink.Href})
 	feed.Groups = append(feed.Groups, group)
 }
 
 // AddNavigationInGroup add a navigation link to Group
-func (feed *Feed) AddNavigationInGroup(link Link, collLink Link) {
+func (feed *Feed) AddNavigationInGroup(link *Link, collLink *Link) {
 	var group Group
 
 	for i, g := range feed.Groups {
@@ -97,7 +97,7 @@ func (feed *Feed) AddNavigationInGroup(link Link, collLink Link) {
 
 	group.Metadata.Title = collLink.Title
 	group.Navigation = append(group.Navigation, link)
-	group.Links = append(group.Links, Link{Rel: []string{"self"}, Title: collLink.Title, Href: collLink.Href})
+	group.Links = append(group.Links, &Link{Rel: []string{"self"}, Title: collLink.Title, Href: collLink.Href})
 	feed.Groups = append(feed.Groups, group)
 }
 

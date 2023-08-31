@@ -3,7 +3,7 @@ package opds2
 import "strings"
 
 // Links used in collections and links
-type Links []Link
+type Links []*Link
 
 // Link object used in collections and links
 type Link struct {
@@ -20,8 +20,8 @@ type Link struct {
 	Bitrate    int         `json:"bitrate,omitempty"`
 }
 
-func NewLink(href string) Link {
-	return Link{
+func NewLink(href string) *Link {
+	return &Link{
 		Href:       href,
 		Properties: &Properties{},
 	}

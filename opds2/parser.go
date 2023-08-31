@@ -134,7 +134,7 @@ func parseLinks(feed *Feed, data interface{}) {
 	}
 }
 
-func parseLink(data interface{}) Link {
+func parseLink(data interface{}) *Link {
 	info := data.(map[string]interface{})
 	l := Link{}
 	for k, v := range info {
@@ -196,7 +196,7 @@ func parseLink(data interface{}) Link {
 		}
 	}
 
-	return l
+	return &l
 }
 
 func parseIndirectAcquisition(data interface{}) IndirectAcquisition {

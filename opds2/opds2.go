@@ -142,7 +142,7 @@ func (r StringOrArray) MarshalJSON() ([]byte, error) {
 	return json.Marshal(r)
 }
 
-func (publication *Publication) FindFirstImageByRel(rel string) Link {
+func (publication *Publication) FindFirstImageByRel(rel string) *Link {
 	for _, l := range publication.Images {
 		for _, r := range l.Rel {
 			if r == rel {
@@ -150,10 +150,10 @@ func (publication *Publication) FindFirstImageByRel(rel string) Link {
 			}
 		}
 	}
-	return Link{}
+	return &Link{}
 }
 
-func (publication *Publication) FindFirstLinkByRel(rel string) Link {
+func (publication *Publication) FindFirstLinkByRel(rel string) *Link {
 	for _, l := range publication.Links {
 		for _, r := range l.Rel {
 			if r == rel {
@@ -161,16 +161,16 @@ func (publication *Publication) FindFirstLinkByRel(rel string) Link {
 			}
 		}
 	}
-	return Link{}
+	return &Link{}
 }
 
-func (publication *Publication) FindFirstLinkByType(mt string) Link {
+func (publication *Publication) FindFirstLinkByType(mt string) *Link {
 	for _, l := range publication.Links {
 		if strings.Contains(l.TypeLink, mt) {
 			return l
 		}
 	}
-	return Link{}
+	return &Link{}
 }
 
 // New create a new feed structure
