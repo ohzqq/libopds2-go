@@ -19,13 +19,6 @@ type Feed struct {
 	Navigation   Links         `json:"navigation,omitempty"`
 }
 
-// Publication is a collection for a given publication
-type Publication struct {
-	Metadata PublicationMetadata `json:"metadata"`
-	Links    Links               `json:"links"`
-	Images   Links               `json:"images"`
-}
-
 // Metadata has a limited subset of metadata compared to a publication
 type Metadata struct {
 	RDFType       string     `json:"@type,omitempty"`
@@ -50,24 +43,6 @@ type Group struct {
 	Navigation   Links         `json:"navigation,omitempty"`
 }
 
-// Links used in collections and links
-type Links []Link
-
-// Link object used in collections and links
-type Link struct {
-	Href       string      `json:"href"`
-	TypeLink   string      `json:"type,omitempty"`
-	Rel        []string    `json:"rel,omitempty"`
-	Height     int         `json:"height,omitempty"`
-	Width      int         `json:"width,omitempty"`
-	Title      string      `json:"title,omitempty"`
-	Properties *Properties `json:"properties,omitempty"`
-	Duration   string      `json:"duration,omitempty"`
-	Templated  bool        `json:"templated,omitempty"`
-	Children   Links       `json:"children,omitempty"`
-	Bitrate    int         `json:"bitrate,omitempty"`
-}
-
 // Properties object use to link properties
 // Use also in Rendition for fxl
 type Properties struct {
@@ -86,35 +61,6 @@ type IndirectAcquisition struct {
 type Price struct {
 	Currency string  `json:"currency"`
 	Value    float64 `json:"value"`
-}
-
-// PublicationMetadata for the default context in WebPub
-type PublicationMetadata struct {
-	RDFType         string        `json:"@type,omitempty"` //Defaults to schema.org for EBook
-	Title           MultiLanguage `json:"title"`
-	Identifier      string        `json:"identifier"`
-	Author          Contributors  `json:"author,omitempty"`
-	Translator      Contributors  `json:"translator,omitempty"`
-	Editor          Contributors  `json:"editor,omitempty"`
-	Artist          Contributors  `json:"artist,omitempty"`
-	Illustrator     Contributors  `json:"illustrator,omitempty"`
-	Letterer        Contributors  `json:"letterer,omitempty"`
-	Penciler        Contributors  `json:"penciler,omitempty"`
-	Colorist        Contributors  `json:"colorist,omitempty"`
-	Inker           Contributors  `json:"inker,omitempty"`
-	Narrator        Contributors  `json:"narrator,omitempty"`
-	Contributor     Contributors  `json:"contributor,omitempty"`
-	Publisher       Contributors  `json:"publisher,omitempty"`
-	Imprint         Contributors  `json:"imprint,omitempty"`
-	Language        []string      `json:"language,omitempty"`
-	Modified        *time.Time    `json:"modified,omitempty"`
-	PublicationDate *time.Time    `json:"published,omitempty"`
-	Description     string        `json:"description,omitempty"`
-	Source          string        `json:"source,omitempty"`
-	Rights          string        `json:"rights,omitempty"`
-	Subject         Subjects      `json:"subject,omitempty"`
-	BelongsTo       *BelongsTo    `json:"belongs_to,omitempty"`
-	Duration        int           `json:"duration,omitempty"`
 }
 
 // Contributor Slice
