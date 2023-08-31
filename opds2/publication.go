@@ -38,14 +38,15 @@ type PublicationMetadata struct {
 	Duration        int           `json:"duration,omitempty"`
 }
 
-func NewPublication() Publication {
+func NewPublication(title MultiLanguage) Publication {
 	return Publication{
-		Metadata: NewPublicationMetadata(),
+		Metadata: NewPublicationMetadata(title),
 	}
 }
 
-func NewPublicationMetadata() PublicationMetadata {
+func NewPublicationMetadata(title MultiLanguage) PublicationMetadata {
 	return PublicationMetadata{
+		Title:     title,
 		BelongsTo: &BelongsTo{},
 	}
 }
