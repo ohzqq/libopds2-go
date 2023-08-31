@@ -402,34 +402,7 @@ func parsePublicationMetadata(metadata *PublicationMetadata, data interface{}) {
 		case "rights":
 			metadata.Rights = v.(string)
 		case "subject":
-			switch data := v.(type) {
-			case string:
-				s := Subject{}
-				s.Name = data
-				metadata.Subject = append(metadata.Subject, s)
-			case []any:
-				for _, subject := range data {
-					s := Subject{}
-					switch sub := subject.(type) {
-					case string:
-						s.Name = sub
-					case map[string]any:
-						for ks, vs := range sub {
-							switch ks {
-							case "name":
-								s.Name = vs.(string)
-							case "sort_as":
-								s.SortAs = vs.(string)
-							case "scheme":
-								s.Scheme = vs.(string)
-							case "code":
-								s.Code = vs.(string)
-							}
-						}
-					}
-					metadata.Subject = append(metadata.Subject, s)
-				}
-			}
+			metadata.Subject = parseSubject(v)
 		case "belongs_to":
 			belong := BelongsTo{}
 			infoB := v.(map[string]interface{})
@@ -468,6 +441,39 @@ func parsePublicationMetadata(metadata *PublicationMetadata, data interface{}) {
 			metadata.Duration = int(v.(float64))
 		}
 	}
+}
+
+func parseSubject(v any) []Subject {
+	var subs []Subject
+	switch data := v.(type) {
+	case string:
+		s := Subject{}
+		s.Name = data
+		subs = append(subs, s)
+	case []any:
+		for _, subject := range data {
+			s := Subject{}
+			switch sub := subject.(type) {
+			case string:
+				s.Name = sub
+			case map[string]any:
+				for ks, vs := range sub {
+					switch ks {
+					case "name":
+						s.Name = vs.(string)
+					case "sort_as":
+						s.SortAs = vs.(string)
+					case "scheme":
+						s.Scheme = vs.(string)
+					case "code":
+						s.Code = vs.(string)
+					}
+				}
+			}
+			subs = append(subs, s)
+		}
+	}
+	return subs
 }
 
 func parseCollection(data interface{}) Collection {
