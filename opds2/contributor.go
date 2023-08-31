@@ -2,6 +2,24 @@ package opds2
 
 import "strings"
 
+type Role string
+
+const (
+	Author             Role = "author"
+	Translator              = "translator"
+	Editor                  = "editor"
+	Artist                  = "artist"
+	Illustrator             = "illustrator"
+	Letterer                = "letterer"
+	Penciler                = "penciler"
+	Colorist                = "colorist"
+	Inker                   = "inker"
+	Narrator                = "narrator"
+	Publisher               = "publisher"
+	Imprint                 = "imprint"
+	GenericContributor      = "contributor"
+)
+
 // Contributor Slice
 type Contributors []*Contributor
 
@@ -32,4 +50,10 @@ func (c Contributors) StringSlice() []string {
 
 func (c Contributors) String() string {
 	return strings.Join(c.StringSlice(), " & ")
+}
+
+func (r Role) New(name string) *Contributor {
+	c := NewContributor(name)
+	c.Role = string(r)
+	return c
 }
