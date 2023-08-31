@@ -513,7 +513,7 @@ func ParseContributors(data interface{}) []Contributor {
 	case []string:
 		for _, i := range d {
 			cont := Contributor{}
-			cont.Name.SingleString = d
+			cont.Name.SingleString = i
 			c = append(c, cont)
 		}
 	case []interface{}:
