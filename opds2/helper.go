@@ -222,8 +222,9 @@ func NewCollection(name string) Collection {
 
 func NewLink(href string, rel ...string) Link {
 	return Link{
-		Href: href,
-		Rel:  rel,
+		Href:       href,
+		Rel:        rel,
+		Properties: &Properties{},
 	}
 }
 
