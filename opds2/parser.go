@@ -85,24 +85,24 @@ func (feed *Feed) UnmarshalJSON(data []byte) error {
 				feed.Context = v.([]string)
 			}
 		case "metadata":
-			parseMetadata(&feed.Metadata, v)
+			ParseMetadata(&feed.Metadata, v)
 		case "links":
-			parseLinks(feed, v)
+			ParseLinks(feed, v)
 		case "facets":
-			parseFacets(feed, v)
+			ParseFacets(feed, v)
 		case "publications":
-			parsePublications(feed, v)
+			ParsePublications(feed, v)
 		case "navigation":
-			parseNavigation(feed, v)
+			ParseNavigation(feed, v)
 		case "groups":
-			parseGroups(feed, v)
+			ParseGroups(feed, v)
 		}
 	}
 
 	return nil
 }
 
-func parseMetadata(m *Metadata, data interface{}) {
+func ParseMetadata(m *Metadata, data interface{}) {
 
 	info := data.(map[string]interface{})
 	for k, v := range info {
@@ -126,15 +126,19 @@ func parseMetadata(m *Metadata, data interface{}) {
 	}
 }
 
-func parseLinks(feed *Feed, data interface{}) {
+func ParseLinks(feed *Feed, data interface{}) {
 	infoA := data.([]interface{})
 	for _, vA := range infoA {
-		l := parseLink(vA)
+		l := ParseLink(vA)
 		feed.Links = append(feed.Links, l)
 	}
 }
 
+<<<<<<< HEAD
 func parseLink(data interface{}) *Link {
+=======
+func ParseLink(data interface{}) Link {
+>>>>>>> master
 	info := data.(map[string]interface{})
 	l := Link{}
 	for k, v := range info {
@@ -172,7 +176,7 @@ func parseLink(data interface{}) *Link {
 				case "indirectAcquisition":
 					infoIndir := vp.([]interface{})
 					for _, in := range infoIndir {
-						indir := parseIndirectAcquisition(in)
+						indir := ParseIndirectAcquisition(in)
 						p.IndirectAcquisition = append(p.IndirectAcquisition, indir)
 					}
 				case "price":
@@ -191,7 +195,7 @@ func parseLink(data interface{}) *Link {
 			}
 			l.Properties = &p
 		case "children":
-			lc := parseLink(v)
+			lc := ParseLink(v)
 			l.Children = append(l.Children, lc)
 		}
 	}
@@ -199,7 +203,7 @@ func parseLink(data interface{}) *Link {
 	return &l
 }
 
-func parseIndirectAcquisition(data interface{}) IndirectAcquisition {
+func ParseIndirectAcquisition(data interface{}) IndirectAcquisition {
 	var i IndirectAcquisition
 
 	info := data.(map[string]interface{})
@@ -210,7 +214,7 @@ func parseIndirectAcquisition(data interface{}) IndirectAcquisition {
 		case "child":
 			infoA := v.([]interface{})
 			for _, in := range infoA {
-				indirect := parseIndirectAcquisition(in)
+				indirect := ParseIndirectAcquisition(in)
 				i.Child = append(i.Child, indirect)
 			}
 		}
@@ -219,7 +223,7 @@ func parseIndirectAcquisition(data interface{}) IndirectAcquisition {
 	return i
 }
 
-func parseFacets(feed *Feed, data interface{}) {
+func ParseFacets(feed *Feed, data interface{}) {
 	info := data.([]interface{})
 	f := Facet{}
 	for _, fa := range info {
@@ -227,11 +231,11 @@ func parseFacets(feed *Feed, data interface{}) {
 		for k, v := range infoA {
 			switch k {
 			case "metadata":
-				parseMetadata(&f.Metadata, v)
+				ParseMetadata(&f.Metadata, v)
 			case "links":
 				infoAL := v.([]interface{})
 				for _, vA := range infoAL {
-					l := parseLink(vA)
+					l := ParseLink(vA)
 					f.Links = append(f.Links, l)
 				}
 			}
@@ -240,7 +244,7 @@ func parseFacets(feed *Feed, data interface{}) {
 	}
 }
 
-func parseGroups(feed *Feed, data interface{}) {
+func ParseGroups(feed *Feed, data interface{}) {
 	info := data.([]interface{})
 	for _, ga := range info {
 		g := Group{}
@@ -248,23 +252,23 @@ func parseGroups(feed *Feed, data interface{}) {
 		for k, v := range infoA {
 			switch k {
 			case "metadata":
-				parseMetadata(&g.Metadata, v)
+				ParseMetadata(&g.Metadata, v)
 			case "links":
 				infoAL := v.([]interface{})
 				for _, vA := range infoAL {
-					l := parseLink(vA)
+					l := ParseLink(vA)
 					g.Links = append(g.Links, l)
 				}
 			case "navigation":
 				infoAN := v.([]interface{})
 				for _, vAN := range infoAN {
-					l := parseLink(vAN)
+					l := ParseLink(vAN)
 					g.Navigation = append(g.Navigation, l)
 				}
 			case "publications":
 				infoP := v.([]interface{})
 				for _, vP := range infoP {
-					p := parsePublication(vP)
+					p := ParsePublication(vP)
 					g.Publications = append(g.Publications, p)
 				}
 			}
@@ -273,32 +277,32 @@ func parseGroups(feed *Feed, data interface{}) {
 	}
 }
 
-func parsePublications(feed *Feed, data interface{}) {
+func ParsePublications(feed *Feed, data interface{}) {
 	info := data.([]interface{})
 	for _, fa := range info {
-		p := parsePublication(fa)
+		p := ParsePublication(fa)
 		feed.Publications = append(feed.Publications, p)
 	}
 }
 
-func parsePublication(data interface{}) Publication {
+func ParsePublication(data interface{}) Publication {
 	var p Publication
 
 	infoA := data.(map[string]interface{})
 	for k, v := range infoA {
 		switch k {
 		case "metadata":
-			parsePublicationMetadata(&p.Metadata, v)
+			ParsePublicationMetadata(&p.Metadata, v)
 		case "links":
 			infoAL := v.([]interface{})
 			for _, vA := range infoAL {
-				l := parseLink(vA)
+				l := ParseLink(vA)
 				p.Links = append(p.Links, l)
 			}
 		case "images":
 			infoAL := v.([]interface{})
 			for _, vA := range infoAL {
-				l := parseLink(vA)
+				l := ParseLink(vA)
 				p.Images = append(p.Images, l)
 			}
 		}
@@ -307,7 +311,7 @@ func parsePublication(data interface{}) Publication {
 	return p
 }
 
-func parsePublicationMetadata(metadata *PublicationMetadata, data interface{}) {
+func ParsePublicationMetadata(metadata *PublicationMetadata, data interface{}) {
 	info := data.(map[string]interface{})
 	for k, v := range info {
 		switch k {
@@ -325,67 +329,67 @@ func parsePublicationMetadata(metadata *PublicationMetadata, data interface{}) {
 		case "type":
 			metadata.RDFType = v.(string)
 		case "author":
-			c := parseContributors(v)
+			c := ParseContributors(v)
 			for _, cont := range c {
 				metadata.Author = append(metadata.Author, cont)
 			}
 		case "translator":
-			c := parseContributors(v)
+			c := ParseContributors(v)
 			for _, cont := range c {
 				metadata.Translator = append(metadata.Translator, cont)
 			}
 		case "editor":
-			c := parseContributors(v)
+			c := ParseContributors(v)
 			for _, cont := range c {
 				metadata.Editor = append(metadata.Editor, cont)
 			}
 		case "artist":
-			c := parseContributors(v)
+			c := ParseContributors(v)
 			for _, cont := range c {
 				metadata.Artist = append(metadata.Artist, cont)
 			}
 		case "illustrator":
-			c := parseContributors(v)
+			c := ParseContributors(v)
 			for _, cont := range c {
 				metadata.Illustrator = append(metadata.Illustrator, cont)
 			}
 		case "letterer":
-			c := parseContributors(v)
+			c := ParseContributors(v)
 			for _, cont := range c {
 				metadata.Letterer = append(metadata.Letterer, cont)
 			}
 		case "penciler":
-			c := parseContributors(v)
+			c := ParseContributors(v)
 			for _, cont := range c {
 				metadata.Penciler = append(metadata.Penciler, cont)
 			}
 		case "colorist":
-			c := parseContributors(v)
+			c := ParseContributors(v)
 			for _, cont := range c {
 				metadata.Colorist = append(metadata.Colorist, cont)
 			}
 		case "inker":
-			c := parseContributors(v)
+			c := ParseContributors(v)
 			for _, cont := range c {
 				metadata.Inker = append(metadata.Inker, cont)
 			}
 		case "narrator":
-			c := parseContributors(v)
+			c := ParseContributors(v)
 			for _, cont := range c {
 				metadata.Narrator = append(metadata.Narrator, cont)
 			}
 		case "contributor":
-			c := parseContributors(v)
+			c := ParseContributors(v)
 			for _, cont := range c {
 				metadata.Contributor = append(metadata.Contributor, cont)
 			}
 		case "publisher":
-			c := parseContributors(v)
+			c := ParseContributors(v)
 			for _, cont := range c {
 				metadata.Publisher = append(metadata.Publisher, cont)
 			}
 		case "imprint":
-			c := parseContributors(v)
+			c := ParseContributors(v)
 			for _, cont := range c {
 				metadata.Imprint = append(metadata.Imprint, cont)
 			}
@@ -410,24 +414,7 @@ func parsePublicationMetadata(metadata *PublicationMetadata, data interface{}) {
 		case "rights":
 			metadata.Rights = v.(string)
 		case "subject":
-			infoS := v.([]interface{})
-			for _, sub := range infoS {
-				s := Subject{}
-				subject := sub.(map[string]interface{})
-				for ks, vs := range subject {
-					switch ks {
-					case "name":
-						s.Name = vs.(string)
-					case "sort_as":
-						s.SortAs = vs.(string)
-					case "scheme":
-						s.Scheme = vs.(string)
-					case "code":
-						s.Code = vs.(string)
-					}
-				}
-				metadata.Subject = append(metadata.Subject, s)
-			}
+			metadata.Subject = ParseSubject(v)
 		case "belongs_to":
 			belong := BelongsTo{}
 			infoB := v.(map[string]interface{})
@@ -439,11 +426,11 @@ func parsePublicationMetadata(metadata *PublicationMetadata, data interface{}) {
 						belong.Series = append(belong.Series, Collection{Name: vb.(string)})
 					case []interface{}:
 						for _, colls := range vb.([]interface{}) {
-							coll := parseCollection(colls)
+							coll := ParseCollection(colls)
 							belong.Series = append(belong.Series, coll)
 						}
 					case interface{}:
-						coll := parseCollection(vb)
+						coll := ParseCollection(vb)
 						belong.Series = append(belong.Series, coll)
 					}
 				case "collection":
@@ -452,11 +439,11 @@ func parsePublicationMetadata(metadata *PublicationMetadata, data interface{}) {
 						belong.Collection = append(belong.Collection, Collection{Name: vb.(string)})
 					case []interface{}:
 						for _, colls := range vb.([]interface{}) {
-							coll := parseCollection(colls)
+							coll := ParseCollection(colls)
 							belong.Collection = append(belong.Collection, coll)
 						}
 					case interface{}:
-						coll := parseCollection(vb)
+						coll := ParseCollection(vb)
 						belong.Collection = append(belong.Collection, coll)
 					}
 				}
@@ -468,7 +455,40 @@ func parsePublicationMetadata(metadata *PublicationMetadata, data interface{}) {
 	}
 }
 
-func parseCollection(data interface{}) Collection {
+func ParseSubject(v any) []Subject {
+	var subs []Subject
+	switch data := v.(type) {
+	case string:
+		s := Subject{}
+		s.Name = data
+		subs = append(subs, s)
+	case []any:
+		for _, subject := range data {
+			s := Subject{}
+			switch sub := subject.(type) {
+			case string:
+				s.Name = sub
+			case map[string]any:
+				for ks, vs := range sub {
+					switch ks {
+					case "name":
+						s.Name = vs.(string)
+					case "sort_as":
+						s.SortAs = vs.(string)
+					case "scheme":
+						s.Scheme = vs.(string)
+					case "code":
+						s.Code = vs.(string)
+					}
+				}
+			}
+			subs = append(subs, s)
+		}
+	}
+	return subs
+}
+
+func ParseCollection(data interface{}) Collection {
 	var collection Collection
 
 	info := data.(map[string]interface{})
@@ -485,7 +505,7 @@ func parseCollection(data interface{}) Collection {
 		case "links":
 			infoL := v.([]interface{})
 			for _, l := range infoL {
-				link := parseLink(l)
+				link := ParseLink(l)
 				collection.Links = append(collection.Links, link)
 			}
 		}
@@ -494,29 +514,49 @@ func parseCollection(data interface{}) Collection {
 	return collection
 }
 
+<<<<<<< HEAD
 func parseContributors(data interface{}) []*Contributor {
 	var c []*Contributor
+=======
+func ParseContributors(data interface{}) []Contributor {
+	var c []Contributor
+>>>>>>> master
 
-	switch data.(type) {
+	switch d := data.(type) {
 	case string:
+<<<<<<< HEAD
 		cont := &Contributor{}
 		cont.Name.SingleString = data.(string)
+=======
+		cont := Contributor{}
+		cont.Name.SingleString = d
+>>>>>>> master
 		c = append(c, cont)
+	case []string:
+		for _, i := range d {
+			cont := Contributor{}
+			cont.Name.SingleString = i
+			c = append(c, cont)
+		}
 	case []interface{}:
-		infoA := data.([]interface{})
-		for _, i := range infoA {
-			cont := parseContributor(i)
+		for _, i := range d {
+			cont := ParseContributor(i)
 			c = append(c, cont)
 		}
 	case interface{}:
-		cont := parseContributor(data)
+		cont := ParseContributor(d)
 		c = append(c, cont)
 	}
 	return c
 }
 
+<<<<<<< HEAD
 func parseContributor(data interface{}) *Contributor {
 	c := &Contributor{}
+=======
+func ParseContributor(data interface{}) Contributor {
+	var c Contributor
+>>>>>>> master
 
 	info := data.(map[string]interface{})
 	for k, v := range info {
@@ -539,7 +579,7 @@ func parseContributor(data interface{}) *Contributor {
 		case "role":
 			c.Role = v.(string)
 		case "links":
-			l := parseLink(v)
+			l := ParseLink(v)
 			c.Links = append(c.Links, l)
 		}
 	}
@@ -547,10 +587,10 @@ func parseContributor(data interface{}) *Contributor {
 	return c
 }
 
-func parseNavigation(feed *Feed, data interface{}) {
+func ParseNavigation(feed *Feed, data interface{}) {
 	infoA := data.([]interface{})
 	for _, vA := range infoA {
-		l := parseLink(vA)
+		l := ParseLink(vA)
 		feed.Navigation = append(feed.Navigation, l)
 	}
 }
