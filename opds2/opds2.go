@@ -63,24 +63,6 @@ type Price struct {
 	Value    float64 `json:"value"`
 }
 
-// BelongsTo is a list of collections/series that a publication belongs to
-type BelongsTo struct {
-	Series     Collections `json:"series,omitempty"`
-	Collection Collections `json:"collection,omitempty"`
-}
-
-// Collections Slice
-type Collections []Collection
-
-// Collection construct used for collection/serie metadata
-type Collection struct {
-	Name       string  `json:"name"`
-	SortAs     string  `json:"sort_as,omitempty"`
-	Identifier string  `json:"identifier,omitempty"`
-	Position   float32 `json:"position,omitempty"`
-	Links      Links   `json:"links,omitempty"`
-}
-
 // MultiLanguage store a basic string when we only have one lang
 // Store in a hash by language for multiple string representation
 type MultiLanguage struct {

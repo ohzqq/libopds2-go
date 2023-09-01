@@ -325,70 +325,31 @@ func parsePublicationMetadata(metadata *PublicationMetadata, data interface{}) {
 		case "type":
 			metadata.RDFType = v.(string)
 		case "author":
-			c := parseContributors(v)
-			for _, cont := range c {
-				metadata.Author = append(metadata.Author, cont)
-			}
+			metadata.Author = Author.New(v)
 		case "translator":
-			c := parseContributors(v)
-			for _, cont := range c {
-				metadata.Translator = append(metadata.Translator, cont)
-			}
+			metadata.Translator = Translator.New(v)
 		case "editor":
-			c := parseContributors(v)
-			for _, cont := range c {
-				metadata.Editor = append(metadata.Editor, cont)
-			}
+			metadata.Editor = Editor.New(v)
 		case "artist":
-			c := parseContributors(v)
-			for _, cont := range c {
-				metadata.Artist = append(metadata.Artist, cont)
-			}
+			metadata.Artist = Artist.New(v)
 		case "illustrator":
-			c := parseContributors(v)
-			for _, cont := range c {
-				metadata.Illustrator = append(metadata.Illustrator, cont)
-			}
+			metadata.Illustrator = Illustrator.New(v)
 		case "letterer":
-			c := parseContributors(v)
-			for _, cont := range c {
-				metadata.Letterer = append(metadata.Letterer, cont)
-			}
+			metadata.Letterer = Letterer.New(v)
 		case "penciler":
-			c := parseContributors(v)
-			for _, cont := range c {
-				metadata.Penciler = append(metadata.Penciler, cont)
-			}
+			metadata.Penciler = Penciler.New(v)
 		case "colorist":
-			c := parseContributors(v)
-			for _, cont := range c {
-				metadata.Colorist = append(metadata.Colorist, cont)
-			}
+			metadata.Colorist = Colorist.New(v)
 		case "inker":
-			c := parseContributors(v)
-			for _, cont := range c {
-				metadata.Inker = append(metadata.Inker, cont)
-			}
+			metadata.Inker = Inker.New(v)
 		case "narrator":
-			c := parseContributors(v)
-			for _, cont := range c {
-				metadata.Narrator = append(metadata.Narrator, cont)
-			}
+			metadata.Narrator = Narrator.New(v)
 		case "contributor":
-			c := parseContributors(v)
-			for _, cont := range c {
-				metadata.Contributor = append(metadata.Contributor, cont)
-			}
+			metadata.Contributor = parseCons(v)
 		case "publisher":
-			c := parseContributors(v)
-			for _, cont := range c {
-				metadata.Publisher = append(metadata.Publisher, cont)
-			}
+			metadata.Publisher = Publisher.New(v)
 		case "imprint":
-			c := parseContributors(v)
-			for _, cont := range c {
-				metadata.Imprint = append(metadata.Imprint, cont)
-			}
+			metadata.Imprint = Imprint.New(v)
 		case "language":
 			switch vb := v.(type) {
 			case string:
@@ -410,7 +371,7 @@ func parsePublicationMetadata(metadata *PublicationMetadata, data interface{}) {
 		case "rights":
 			metadata.Rights = v.(string)
 		case "subject":
-			metadata.Subject = parseSubject(v)
+			metadata.Subject = parseSubs(v)
 		case "belongs_to":
 			belong := BelongsTo{}
 			infoB := v.(map[string]interface{})
@@ -419,7 +380,7 @@ func parsePublicationMetadata(metadata *PublicationMetadata, data interface{}) {
 				case "series":
 					switch vb.(type) {
 					case string:
-						belong.Series = append(belong.Series, Collection{Name: vb.(string)})
+						belong.Series = append(belong.Series, Collection{Contributor: &Contributor{Name: parseMultiLanguage(vb)}})
 					case []interface{}:
 						for _, colls := range vb.([]interface{}) {
 							coll := parseCollection(colls)
@@ -432,7 +393,7 @@ func parsePublicationMetadata(metadata *PublicationMetadata, data interface{}) {
 				case "collection":
 					switch vb.(type) {
 					case string:
-						belong.Collection = append(belong.Collection, Collection{Name: vb.(string)})
+						belong.Collection = append(belong.Collection, Collection{Contributor: &Contributor{Name: parseMultiLanguage(vb)}})
 					case []interface{}:
 						for _, colls := range vb.([]interface{}) {
 							coll := parseCollection(colls)
@@ -527,6 +488,27 @@ func parseSubject(v any) Subjects {
 	return subs
 }
 
+//func parseCols(data any) Collections {
+//  var cons Collections
+//  switch d := data.(type) {
+//  case string:
+//    c := parseSub(d)
+//    cons = append(cons, c)
+//  case map[string]any:
+//    c := parseSub(d)
+//    cons = append(cons, c)
+//  case []string:
+//    for _, con := range d {
+//      cons = append(cons, parseSub(con))
+//    }
+//  case []map[string]any:
+//    for _, con := range d {
+//      cons = append(cons, parseSub(con))
+//    }
+//  }
+//  return cons
+//}
+
 func parseCollection(data interface{}) Collection {
 	var collection Collection
 
@@ -534,7 +516,7 @@ func parseCollection(data interface{}) Collection {
 	for k, v := range info {
 		switch k {
 		case "name":
-			collection.Name = v.(string)
+			collection.Name = parseMultiLanguage(v)
 		case "sort_as":
 			collection.SortAs = v.(string)
 		case "identifier":

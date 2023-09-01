@@ -70,7 +70,7 @@ func (publication *Publication) AddSerie(name string, position float32, href str
 	var c Collection
 	l := NewLink(href)
 
-	c.Name = name
+	c.Name = parseMultiLanguage(name)
 	c.Position = position
 
 	if publication.Metadata.BelongsTo == nil {

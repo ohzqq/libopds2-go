@@ -6,18 +6,18 @@ type Role string
 
 const (
 	Author             Role = "author"
-	Translator              = "translator"
-	Editor                  = "editor"
-	Artist                  = "artist"
-	Illustrator             = "illustrator"
-	Letterer                = "letterer"
-	Penciler                = "penciler"
-	Colorist                = "colorist"
-	Inker                   = "inker"
-	Narrator                = "narrator"
-	Publisher               = "publisher"
-	Imprint                 = "imprint"
-	GenericContributor      = "contributor"
+	Translator         Role = "translator"
+	Editor             Role = "editor"
+	Artist             Role = "artist"
+	Illustrator        Role = "illustrator"
+	Letterer           Role = "letterer"
+	Penciler           Role = "penciler"
+	Colorist           Role = "colorist"
+	Inker              Role = "inker"
+	Narrator           Role = "narrator"
+	Publisher          Role = "publisher"
+	Imprint            Role = "imprint"
+	GenericContributor Role = "contributor"
 )
 
 // Contributor Slice
@@ -48,8 +48,10 @@ func (c Contributors) String() string {
 	return strings.Join(c.StringSlice(), " & ")
 }
 
-func (r Role) New(name string) *Contributor {
-	c := parseCon(name)
-	c.Role = string(r)
+func (r Role) New(con any) Contributors {
+	c := parseCons(con)
+	for i := range c {
+		c[i].Role = string(r)
+	}
 	return c
 }

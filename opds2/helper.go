@@ -1,7 +1,5 @@
 package opds2
 
-import "strings"
-
 // AddLink add a new link in feed information
 // at minimum the self link
 func (feed *Feed) AddLink(href string, rel string, typeLink string, templated bool) {
@@ -99,22 +97,4 @@ func (feed *Feed) AddNavigationInGroup(link *Link, collLink *Link) {
 	group.Navigation = append(group.Navigation, link)
 	group.Links = append(group.Links, &Link{Rel: []string{"self"}, Title: collLink.Title, Href: collLink.Href})
 	feed.Groups = append(feed.Groups, group)
-}
-
-func NewCollection(name string) Collection {
-	return Collection{
-		Name: name,
-	}
-}
-
-func (c Collections) StringSlice() []string {
-	var cols []string
-	for _, col := range c {
-		cols = append(cols, col.Name)
-	}
-	return cols
-}
-
-func (c Collections) String() string {
-	return strings.Join(c.StringSlice(), ", ")
 }
