@@ -20,11 +20,8 @@ type Link struct {
 	Bitrate    int         `json:"bitrate,omitempty"`
 }
 
-func NewLink(href string) *Link {
-	return &Link{
-		Href:       href,
-		Properties: &Properties{},
-	}
+func NewLink(data any) *Link {
+	return parseLink(data)
 }
 
 func (l Links) StringSlice() []string {
