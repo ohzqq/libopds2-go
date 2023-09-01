@@ -32,11 +32,7 @@ type Contributor struct {
 	Links      Links         `json:"links,omitempty"`
 }
 
-func NewContributor(con any) *Contributor {
-	return parseCon(con)
-}
-
-func NewContributors(con any) Contributors {
+func NewContributor(con any) Contributors {
 	return parseCons(con)
 }
 
@@ -53,7 +49,7 @@ func (c Contributors) String() string {
 }
 
 func (r Role) New(name string) *Contributor {
-	c := NewContributor(name)
+	c := parseCon(name)
 	c.Role = string(r)
 	return c
 }

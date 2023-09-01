@@ -107,12 +107,6 @@ func NewCollection(name string) Collection {
 	}
 }
 
-func NewSubject(name string) Subject {
-	return Subject{
-		Name: name,
-	}
-}
-
 func (c Collections) StringSlice() []string {
 	var cols []string
 	for _, col := range c {
@@ -123,16 +117,4 @@ func (c Collections) StringSlice() []string {
 
 func (c Collections) String() string {
 	return strings.Join(c.StringSlice(), ", ")
-}
-
-func (s Subjects) StringSlice() []string {
-	var subs []string
-	for _, sub := range s {
-		subs = append(subs, sub.Name)
-	}
-	return subs
-}
-
-func (s Subjects) String() string {
-	return strings.Join(s.StringSlice(), ", ")
 }

@@ -63,17 +63,6 @@ type Price struct {
 	Value    float64 `json:"value"`
 }
 
-// Subject Slice
-type Subjects []Subject
-
-// Subject as based on EPUB 3.1 and WebPub
-type Subject struct {
-	Name   string `json:"name"`
-	SortAs string `json:"sort_as,omitempty"`
-	Scheme string `json:"scheme,omitempty"`
-	Code   string `json:"code,omitempty"`
-}
-
 // BelongsTo is a list of collections/series that a publication belongs to
 type BelongsTo struct {
 	Series     Collections `json:"series,omitempty"`

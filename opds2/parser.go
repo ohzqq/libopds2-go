@@ -451,16 +451,59 @@ func parsePublicationMetadata(metadata *PublicationMetadata, data interface{}) {
 	}
 }
 
-func parseSubject(v any) []Subject {
-	var subs []Subject
+func parseSub(data any) *Subject {
+	c := &Subject{}
+	switch d := data.(type) {
+	case string:
+		c.Name = d
+	case map[string]any:
+		for ks, vs := range d {
+			switch ks {
+			case "name":
+				c.Name = vs.(string)
+			case "sort_as":
+				c.SortAs = vs.(string)
+			case "scheme":
+				c.Scheme = vs.(string)
+			case "code":
+				c.Code = vs.(string)
+			}
+		}
+	}
+	return c
+}
+
+func parseSubs(data any) Subjects {
+	var cons Subjects
+	switch d := data.(type) {
+	case string:
+		c := parseSub(d)
+		cons = append(cons, c)
+	case map[string]any:
+		c := parseSub(d)
+		cons = append(cons, c)
+	case []string:
+		for _, con := range d {
+			cons = append(cons, parseSub(con))
+		}
+	case []map[string]any:
+		for _, con := range d {
+			cons = append(cons, parseSub(con))
+		}
+	}
+	return cons
+}
+
+func parseSubject(v any) Subjects {
+	var subs Subjects
 	switch data := v.(type) {
 	case string:
-		s := Subject{}
+		s := &Subject{}
 		s.Name = data
 		subs = append(subs, s)
 	case []any:
 		for _, subject := range data {
-			s := Subject{}
+			s := &Subject{}
 			switch sub := subject.(type) {
 			case string:
 				s.Name = sub
@@ -551,11 +594,13 @@ func parseMultiLanguage(data any) MultiLanguage {
 }
 
 func parseCon(data interface{}) *Contributor {
-	c := &Contributor{}
 	switch d := data.(type) {
 	case string:
+		c := &Contributor{}
 		c.Name = parseMultiLanguage(d)
+		return c
 	case map[string]any:
+		c := &Contributor{}
 		for k, v := range d {
 			switch k {
 			case "name":
@@ -571,13 +616,20 @@ func parseCon(data interface{}) *Contributor {
 				c.Links = append(c.Links, l)
 			}
 		}
+		return c
 	}
-	return c
+	return &Contributor{}
 }
 
-func parseCons(data any) []*Contributor {
-	var cons []*Contributor
+func parseCons(data any) Contributors {
+	var cons Contributors
 	switch d := data.(type) {
+	case string:
+		c := parseCon(d)
+		cons = append(cons, c)
+	case map[string]any:
+		c := parseCon(d)
+		cons = append(cons, c)
 	case []string:
 		for _, con := range d {
 			cons = append(cons, parseCon(con))
