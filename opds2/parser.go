@@ -134,11 +134,7 @@ func ParseLinks(feed *Feed, data interface{}) {
 	}
 }
 
-<<<<<<< HEAD
-func parseLink(data interface{}) *Link {
-=======
-func ParseLink(data interface{}) Link {
->>>>>>> master
+func ParseLink(data interface{}) *Link {
 	info := data.(map[string]interface{})
 	l := Link{}
 	for k, v := range info {
@@ -514,27 +510,16 @@ func ParseCollection(data interface{}) Collection {
 	return collection
 }
 
-<<<<<<< HEAD
-func parseContributors(data interface{}) []*Contributor {
+func ParseContributors(data interface{}) []*Contributor {
 	var c []*Contributor
-=======
-func ParseContributors(data interface{}) []Contributor {
-	var c []Contributor
->>>>>>> master
-
 	switch d := data.(type) {
 	case string:
-<<<<<<< HEAD
 		cont := &Contributor{}
 		cont.Name.SingleString = data.(string)
-=======
-		cont := Contributor{}
-		cont.Name.SingleString = d
->>>>>>> master
 		c = append(c, cont)
 	case []string:
 		for _, i := range d {
-			cont := Contributor{}
+			cont := &Contributor{}
 			cont.Name.SingleString = i
 			c = append(c, cont)
 		}
@@ -550,14 +535,8 @@ func ParseContributors(data interface{}) []Contributor {
 	return c
 }
 
-<<<<<<< HEAD
-func parseContributor(data interface{}) *Contributor {
+func ParseContributor(data interface{}) *Contributor {
 	c := &Contributor{}
-=======
-func ParseContributor(data interface{}) Contributor {
-	var c Contributor
->>>>>>> master
-
 	info := data.(map[string]interface{})
 	for k, v := range info {
 		switch k {
