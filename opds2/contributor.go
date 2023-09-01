@@ -32,12 +32,12 @@ type Contributor struct {
 	Links      Links         `json:"links,omitempty"`
 }
 
-func NewContributor(name string) *Contributor {
-	return &Contributor{
-		Name: MultiLanguage{
-			SingleString: name,
-		},
-	}
+func NewContributor(con any) *Contributor {
+	return parseCon(con)
+}
+
+func NewContributors(con any) Contributors {
+	return parseCons(con)
 }
 
 func (c Contributors) StringSlice() []string {

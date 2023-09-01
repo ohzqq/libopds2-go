@@ -535,6 +535,61 @@ func parseContributors(data interface{}) []*Contributor {
 	return c
 }
 
+func parseMultiLanguage(data any) MultiLanguage {
+	lang := MultiLanguage{
+		MultiString: make(map[string]string),
+	}
+	switch d := data.(type) {
+	case string:
+		lang.SingleString = d
+	case map[string]string:
+		for k, v := range d {
+			lang.MultiString[k] = v
+		}
+	}
+	return lang
+}
+
+func parseCon(data interface{}) *Contributor {
+	c := &Contributor{}
+	switch d := data.(type) {
+	case string:
+		c.Name = parseMultiLanguage(d)
+	case map[string]any:
+		for k, v := range d {
+			switch k {
+			case "name":
+				c.Name = parseMultiLanguage(v)
+			case "identifier":
+				c.Identifier = v.(string)
+			case "sort_as":
+				c.SortAs = v.(string)
+			case "role":
+				c.Role = v.(string)
+			case "links":
+				l := parseLink(v)
+				c.Links = append(c.Links, l)
+			}
+		}
+	}
+	return c
+}
+
+func parseCons(data any) []*Contributor {
+	var cons []*Contributor
+	switch d := data.(type) {
+	case []string:
+		for _, con := range d {
+			cons = append(cons, parseCon(con))
+		}
+	case []map[string]any:
+		for _, con := range d {
+			cons = append(cons, parseCon(con))
+		}
+	}
+	return cons
+}
+
 func parseContributor(data interface{}) *Contributor {
 	c := &Contributor{}
 	info := data.(map[string]interface{})
