@@ -1,6 +1,8 @@
 package opds2
 
-import "strings"
+import (
+	"strings"
+)
 
 // BelongsTo is a list of collections/series that a publication belongs to
 type BelongsTo struct {
@@ -9,16 +11,16 @@ type BelongsTo struct {
 }
 
 // Collections Slice
-type Collections []Collection
+type Collections []*Collection
 
 // Collection construct used for collection/serie metadata
 type Collection struct {
 	*Contributor
-	Position float32 `json:"position,omitempty"`
+	Position float64 `json:"position,omitempty"`
 }
 
-func NewCollection(name string) Collection {
-	return Collection{}
+func NewCollection(col any) Collections {
+	return parseCollections(col)
 }
 
 func (c Collections) StringSlice() []string {

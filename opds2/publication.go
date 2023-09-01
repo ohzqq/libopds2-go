@@ -38,15 +38,15 @@ type PublicationMetadata struct {
 	Duration        int           `json:"duration,omitempty"`
 }
 
-func NewPublication(title MultiLanguage) Publication {
+func NewPublication(title any) Publication {
 	return Publication{
 		Metadata: NewPublicationMetadata(title),
 	}
 }
 
-func NewPublicationMetadata(title MultiLanguage) PublicationMetadata {
+func NewPublicationMetadata(title any) PublicationMetadata {
 	return PublicationMetadata{
-		Title:     title,
+		Title:     parseMultiLanguage(title),
 		BelongsTo: &BelongsTo{},
 	}
 }
@@ -66,24 +66,24 @@ func (publication *Publication) AddLink(href string) *Link {
 }
 
 // AddSerie add serie to publication
-func (publication *Publication) AddSerie(name string, position float32, href string, typeLink string) {
-	var c Collection
-	l := NewLink(href)
+//func (publication *Publication) AddSerie(name string, position float64, href string, typeLink string) {
+//  var c Collection
+//  l := NewLink(href)
 
-	c.Name = parseMultiLanguage(name)
-	c.Position = position
+//  c.Name = parseMultiLanguage(name)
+//  c.Position = position
 
-	if publication.Metadata.BelongsTo == nil {
-		publication.Metadata.BelongsTo = &BelongsTo{}
-	}
+//  if publication.Metadata.BelongsTo == nil {
+//    publication.Metadata.BelongsTo = &BelongsTo{}
+//  }
 
-	if typeLink != "" {
-		l.TypeLink = typeLink
-	}
+//  if typeLink != "" {
+//    l.TypeLink = typeLink
+//  }
 
-	if l.Href != "" {
-		c.Links = append(c.Links, l)
-	}
+//  if l.Href != "" {
+//    c.Links = append(c.Links, l)
+//  }
 
-	publication.Metadata.BelongsTo.Series = append(publication.Metadata.BelongsTo.Series, c)
-}
+//  publication.Metadata.BelongsTo.Series = append(publication.Metadata.BelongsTo.Series, c)
+//}
