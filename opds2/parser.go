@@ -39,16 +39,12 @@ func ParseURL(url string) (*Feed, error) {
 // ParseFile parse opds2 from a file on filesystem
 func ParseFile(filePath string) (*Feed, error) {
 
-	f, err := os.Open(filePath)
+	f, err := os.ReadFile(filePath)
 	if err != nil {
 		return &Feed{}, err
 	}
-	buff, errRead := io.ReadAll(f)
-	if err != nil {
-		return &Feed{}, errRead
-	}
 
-	feed, errParse := ParseBuffer(buff)
+	feed, errParse := ParseBuffer(f)
 	if errParse != nil {
 		return &Feed{}, errParse
 	}
@@ -59,22 +55,24 @@ func ParseFile(filePath string) (*Feed, error) {
 // ParseBuffer parse opds2 feed from a buffer of byte usually get
 // from a file or url
 func ParseBuffer(buff []byte) (*Feed, error) {
-	var feed Feed
+	feed := &Feed{}
 
-	errParse := json.Unmarshal(buff, &feed)
+	errParse := json.Unmarshal(buff, feed)
 
 	if errParse != nil {
 		fmt.Println(errParse)
+		return feed, errParse
 	}
 
-	return &feed, nil
+	return feed, nil
 }
 
 // UnmarshalJSON make all unmarshalling by hand to handle all case
 func (feed *Feed) UnmarshalJSON(data []byte) error {
-	var info map[string]any
-
-	json.Unmarshal(data, &info)
+	info, castErr := cast.ToStringMapE(string(data))
+	if castErr != nil {
+		return castErr
+	}
 
 	for k, v := range info {
 		switch k {
@@ -268,7 +266,8 @@ func parseGroups(data any) []Group {
 			case "publications":
 				infoP := cast.ToSlice(v)
 				for _, vP := range infoP {
-					p := parsePublication(vP)
+					p := Publication{}
+					parsePublication(vP, &p)
 					g.Publications = append(g.Publications, p)
 				}
 			}
@@ -282,20 +281,22 @@ func parsePublications(data any) []Publication {
 	var pubs []Publication
 	info := cast.ToSlice(data)
 	for _, fa := range info {
-		p := parsePublication(fa)
+		p := Publication{}
+		parsePublication(fa, &p)
 		pubs = append(pubs, p)
 	}
 	return pubs
 }
 
-func parsePublication(data any) Publication {
-	var p Publication
-
+func parsePublication(data any, p *Publication) {
+	if d, ok := data.([]byte); ok {
+		data = string(d)
+	}
 	infoA := cast.ToStringMap(data)
 	for k, v := range infoA {
 		switch k {
 		case "metadata":
-			p.Metadata = parsePublicationMetadata(v)
+			parsePublicationMetadata(v, &p.Metadata)
 		case "links":
 			infoAL := cast.ToSlice(v)
 			for _, vA := range infoAL {
@@ -310,12 +311,12 @@ func parsePublication(data any) Publication {
 			}
 		}
 	}
-
-	return p
 }
 
-func parsePublicationMetadata(data any) PublicationMetadata {
-	metadata := PublicationMetadata{}
+func parsePublicationMetadata(data any, metadata *PublicationMetadata) {
+	if d, ok := data.([]byte); ok {
+		data = string(d)
+	}
 	info := cast.ToStringMap(data)
 	for k, v := range info {
 		switch k {
@@ -390,7 +391,6 @@ func parsePublicationMetadata(data any) PublicationMetadata {
 			metadata.Duration = cast.ToInt(v)
 		}
 	}
-	return metadata
 }
 
 func parseSubject(data any) *Subject {
