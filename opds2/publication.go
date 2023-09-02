@@ -30,7 +30,7 @@ type PublicationMetadata struct {
 	Contributor     Contributors  `json:"contributor,omitempty"`
 	Publisher       Contributors  `json:"publisher,omitempty"`
 	Imprint         Contributors  `json:"imprint,omitempty"`
-	Language        []string      `json:"language,omitempty"`
+	Language        StringOrArray `json:"language,omitempty"`
 	Modified        *time.Time    `json:"modified,omitempty"`
 	PublicationDate *time.Time    `json:"published,omitempty"`
 	Description     string        `json:"description,omitempty"`

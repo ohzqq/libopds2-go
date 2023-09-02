@@ -86,24 +86,25 @@ func (feed *Feed) UnmarshalJSON(data []byte) error {
 				feed.Context = cast.ToStringSlice(v)
 			}
 		case "metadata":
-			parseMetadata(&feed.Metadata, v)
+			feed.Metadata = parseMetadata(v)
 		case "links":
-			parseLinks(feed, v)
+			feed.Links = parseLinks(v)
 		case "facets":
-			parseFacets(feed, v)
+			feed.Facets = parseFacets(v)
 		case "publications":
-			parsePublications(feed, v)
+			feed.Publications = parsePublications(v)
 		case "navigation":
-			parseNavigation(feed, v)
+			feed.Navigation = parseLinks(v)
 		case "groups":
-			parseGroups(feed, v)
+			feed.Groups = parseGroups(v)
 		}
 	}
 
 	return nil
 }
 
-func parseMetadata(m *Metadata, data any) {
+func parseMetadata(data any) Metadata {
+	m := Metadata{}
 	info := cast.ToStringMap(data)
 	for k, v := range info {
 		switch k {
@@ -121,14 +122,17 @@ func parseMetadata(m *Metadata, data any) {
 			m.CurrentPage = cast.ToInt(v)
 		}
 	}
+	return m
 }
 
-func parseLinks(feed *Feed, data any) {
+func parseLinks(data any) Links {
+	var links Links
 	infoA := cast.ToSlice(data)
 	for _, vA := range infoA {
 		l := parseLink(vA)
-		feed.Links = append(feed.Links, l)
+		links = append(links, l)
 	}
+	return links
 }
 
 func parseLink(data any) *Link {
@@ -216,7 +220,8 @@ func parseIndirectAcquisition(data any) IndirectAcquisition {
 	return i
 }
 
-func parseFacets(feed *Feed, data any) {
+func parseFacets(data any) []Facet {
+	var facets []Facet
 	info := cast.ToSlice(data)
 	f := Facet{}
 	for _, fa := range info {
@@ -224,7 +229,7 @@ func parseFacets(feed *Feed, data any) {
 		for k, v := range infoA {
 			switch k {
 			case "metadata":
-				parseMetadata(&f.Metadata, v)
+				f.Metadata = parseMetadata(v)
 			case "links":
 				infoAL := cast.ToSlice(v)
 				for _, vA := range infoAL {
@@ -233,11 +238,13 @@ func parseFacets(feed *Feed, data any) {
 				}
 			}
 		}
-		feed.Facets = append(feed.Facets, f)
+		facets = append(facets, f)
 	}
+	return facets
 }
 
-func parseGroups(feed *Feed, data any) {
+func parseGroups(data any) []Group {
+	var groups []Group
 	info := cast.ToSlice(data)
 	for _, ga := range info {
 		g := Group{}
@@ -245,7 +252,7 @@ func parseGroups(feed *Feed, data any) {
 		for k, v := range infoA {
 			switch k {
 			case "metadata":
-				parseMetadata(&g.Metadata, v)
+				g.Metadata = parseMetadata(v)
 			case "links":
 				infoAL := cast.ToSlice(v)
 				for _, vA := range infoAL {
@@ -266,16 +273,19 @@ func parseGroups(feed *Feed, data any) {
 				}
 			}
 		}
-		feed.Groups = append(feed.Groups, g)
+		groups = append(groups, g)
 	}
+	return groups
 }
 
-func parsePublications(feed *Feed, data any) {
+func parsePublications(data any) []Publication {
+	var pubs []Publication
 	info := cast.ToSlice(data)
 	for _, fa := range info {
 		p := parsePublication(fa)
-		feed.Publications = append(feed.Publications, p)
+		pubs = append(pubs, p)
 	}
+	return pubs
 }
 
 func parsePublication(data any) Publication {
@@ -371,7 +381,6 @@ func parsePublicationMetadata(metadata *PublicationMetadata, data any) {
 			metadata.Subject = parseSubs(v)
 		case "belongs_to", "belongsTo":
 			belong := BelongsTo{}
-			fmt.Printf("%T\n", v)
 			infoB := cast.ToStringMap(v)
 			for kb, vb := range infoB {
 				switch kb {
@@ -474,16 +483,15 @@ func parseCollections(data any) Collections {
 }
 
 func parseMultiLanguage(data any) MultiLanguage {
-	lang := MultiLanguage{
-		MultiString: make(map[string]string),
-	}
+	lang := MultiLanguage{}
 	switch d := data.(type) {
 	case string:
 		lang.SingleString = d
 		return lang
-	case map[string]string:
+	case map[string]any:
+		lang.MultiString = make(map[string]string)
 		for k, v := range d {
-			lang.MultiString[k] = v
+			lang.MultiString[k] = cast.ToString(v)
 		}
 	}
 	return lang
@@ -545,47 +553,3 @@ func parseCons(data any) Contributors {
 	}
 	return cons
 }
-
-func parseNavigation(feed *Feed, data any) {
-	infoA := data.([]interface{})
-	for _, vA := range infoA {
-		l := parseLink(vA)
-		feed.Navigation = append(feed.Navigation, l)
-	}
-}
-
-// UnmarshalJSON overwrite json unmarshalling for Rel for handling
-// when we have a array of a string
-// func (r *StringOrArray) UnmarshalJSON(data []byte) error {
-// 	var relAr []string
-//
-// 	if data[0] == '[' {
-// 		err := json.Unmarshal(data, &relAr)
-// 		if err != nil {
-// 			return err
-// 		}
-// 		for _, ra := range relAr {
-// 			*r = append(*r, ra)
-// 		}
-// 	} else {
-// 		*r = append(*r, string(data))
-// 	}
-//
-// 	return nil
-// }
-
-// UnmarshalJSON overwrite json unmarshalling for MultiLanguage
-// when we have an entry in the Multi fields we use it
-// otherwise we use the single string
-// func (m *MultiLanguage) UnmarshalJSON(data []byte) error {
-// 	var mParse map[string]string
-//
-// 	if data[0] == '{' {
-// 		json.Unmarshal(data, &mParse)
-// 		m.MultiString = mParse
-// 	} else {
-// 		m.SingleString = string(data)
-// 	}
-//
-// 	return nil
-// }

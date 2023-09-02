@@ -69,9 +69,20 @@ type MultiLanguage struct {
 	MultiString  map[string]string
 }
 
-// StringOrArray is a array of string redifine for overriding json
+// StringOrArray is a array of string redefine for overriding json
 // marshalling and unmarshalling
 type StringOrArray []string
+
+// New create a new feed structure
+func New(title string) Feed {
+	var feed Feed
+
+	feed.Metadata.Title = title
+	t := time.Now()
+	feed.Metadata.Modified = &t
+
+	return feed
+}
 
 // MarshalJSON overwrite json marshalling for MultiLanguage
 // when we have an entry in the Multi fields we use it
@@ -98,15 +109,4 @@ func (r StringOrArray) MarshalJSON() ([]byte, error) {
 		return json.Marshal(r[0])
 	}
 	return json.Marshal(r)
-}
-
-// New create a new feed structure
-func New(title string) Feed {
-	var feed Feed
-
-	feed.Metadata.Title = title
-	t := time.Now()
-	feed.Metadata.Modified = &t
-
-	return feed
 }
