@@ -24,14 +24,22 @@ func NewLink(data any) *Link {
 	return parseLink(data)
 }
 
-func (l Links) StringSlice() []string {
-	var links []string
-	for _, link := range l {
-		links = append(links, link.Href)
+func (links Links) FindFirstLinkByRel(rel string) *Link {
+	for _, l := range links {
+		for _, r := range l.Rel {
+			if r == rel {
+				return l
+			}
+		}
 	}
-	return links
+	return &Link{}
 }
 
-func (l Links) String() string {
-	return strings.Join(l.StringSlice(), ", ")
+func (links Links) FindFirstLinkByType(mt string) *Link {
+	for _, l := range links {
+		if strings.Contains(l.TypeLink, mt) {
+			return l
+		}
+	}
+	return &Link{}
 }

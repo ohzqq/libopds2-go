@@ -295,7 +295,7 @@ func parsePublication(data any) Publication {
 	for k, v := range infoA {
 		switch k {
 		case "metadata":
-			parsePublicationMetadata(&p.Metadata, v)
+			p.Metadata = parsePublicationMetadata(v)
 		case "links":
 			infoAL := cast.ToSlice(v)
 			for _, vA := range infoAL {
@@ -314,87 +314,90 @@ func parsePublication(data any) Publication {
 	return p
 }
 
-func parsePublicationMeta(data any) PublicationMetadata {
+func parsePublicationMetadata(data any) PublicationMetadata {
 	metadata := PublicationMetadata{}
-	parsePublicationMetadata(&metadata, data)
-	return metadata
-}
-
-func parsePublicationMetadata(metadata *PublicationMetadata, data any) {
-	info := cast.ToStringMap(data)
-	for k, v := range info {
-		switch k {
-		case "title": // handle multistring
-			metadata.Title = parseMultiLanguage(v)
-		case "identifier":
-			metadata.Identifier = cast.ToString(v)
-		case "@type":
-			metadata.RDFType = cast.ToString(v)
-		case "modified":
-			metadata.Modified = parseDate(v)
-		case "type":
-			metadata.RDFType = cast.ToString(v)
-		case "author":
-			metadata.Author = Author.New(v)
-		case "translator":
-			metadata.Translator = Translator.New(v)
-		case "editor":
-			metadata.Editor = Editor.New(v)
-		case "artist":
-			metadata.Artist = Artist.New(v)
-		case "illustrator":
-			metadata.Illustrator = Illustrator.New(v)
-		case "letterer":
-			metadata.Letterer = Letterer.New(v)
-		case "penciler":
-			metadata.Penciler = Penciler.New(v)
-		case "colorist":
-			metadata.Colorist = Colorist.New(v)
-		case "inker":
-			metadata.Inker = Inker.New(v)
-		case "narrator":
-			metadata.Narrator = Narrator.New(v)
-		case "contributor":
-			metadata.Contributor = parseCons(v)
-		case "publisher":
-			metadata.Publisher = Publisher.New(v)
-		case "imprint":
-			metadata.Imprint = Imprint.New(v)
-		case "language":
-			switch vb := v.(type) {
-			case string:
-				metadata.Language = append(metadata.Language, vb)
-			case []any:
-				for _, colls := range cast.ToStringSlice(vb) {
-					metadata.Language = append(metadata.Language, colls)
+	switch v := data.(type) {
+	case string:
+		metadata.Title = parseMultiLanguage(v)
+		return metadata
+	default:
+		info := cast.ToStringMap(data)
+		for k, v := range info {
+			switch k {
+			case "title": // handle multistring
+				metadata.Title = parseMultiLanguage(v)
+			case "identifier":
+				metadata.Identifier = cast.ToString(v)
+			case "@type":
+				metadata.RDFType = cast.ToString(v)
+			case "modified":
+				metadata.Modified = parseDate(v)
+			case "type":
+				metadata.RDFType = cast.ToString(v)
+			case "author":
+				metadata.Author = Author.New(v)
+			case "translator":
+				metadata.Translator = Translator.New(v)
+			case "editor":
+				metadata.Editor = Editor.New(v)
+			case "artist":
+				metadata.Artist = Artist.New(v)
+			case "illustrator":
+				metadata.Illustrator = Illustrator.New(v)
+			case "letterer":
+				metadata.Letterer = Letterer.New(v)
+			case "penciler":
+				metadata.Penciler = Penciler.New(v)
+			case "colorist":
+				metadata.Colorist = Colorist.New(v)
+			case "inker":
+				metadata.Inker = Inker.New(v)
+			case "narrator":
+				metadata.Narrator = Narrator.New(v)
+			case "contributor":
+				metadata.Contributor = parseCons(v)
+			case "publisher":
+				metadata.Publisher = Publisher.New(v)
+			case "imprint":
+				metadata.Imprint = Imprint.New(v)
+			case "language":
+				switch vb := v.(type) {
+				case string:
+					metadata.Language = append(metadata.Language, vb)
+				case []any:
+					for _, colls := range cast.ToStringSlice(vb) {
+						metadata.Language = append(metadata.Language, colls)
+					}
 				}
-			}
-		case "published":
-			metadata.PublicationDate = parseDate(v)
-		case "description":
-			metadata.Description = cast.ToString(v)
-		case "source":
-			metadata.Source = cast.ToString(v)
-		case "rights":
-			metadata.Rights = cast.ToString(v)
-		case "subject":
-			metadata.Subject = parseSubs(v)
-		case "belongs_to", "belongsTo":
-			belong := BelongsTo{}
-			infoB := cast.ToStringMap(v)
-			for kb, vb := range infoB {
-				switch kb {
-				case "series":
-					belong.Series = parseCollections(vb)
-				case "collection":
-					belong.Collection = parseCollections(vb)
+			case "published":
+				metadata.PublicationDate = parseDate(v)
+			case "description":
+				metadata.Description = cast.ToString(v)
+			case "source":
+				metadata.Source = cast.ToString(v)
+			case "rights":
+				metadata.Rights = cast.ToString(v)
+			case "subject":
+				metadata.Subject = parseSubs(v)
+			case "belongs_to", "belongsTo":
+				belong := BelongsTo{}
+				infoB := cast.ToStringMap(v)
+				for kb, vb := range infoB {
+					switch kb {
+					case "series":
+						belong.Series = parseCollections(vb)
+					case "collection":
+						belong.Collection = parseCollections(vb)
+					}
 				}
+				metadata.BelongsTo = &belong
+			case "duration":
+				metadata.Duration = cast.ToInt(v)
 			}
-			metadata.BelongsTo = &belong
-		case "duration":
-			metadata.Duration = cast.ToInt(v)
 		}
+		return metadata
 	}
+	return metadata
 }
 
 func parseSub(data any) *Subject {
