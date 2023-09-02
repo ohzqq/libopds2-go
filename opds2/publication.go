@@ -34,7 +34,7 @@ type PublicationMetadata struct {
 	Source          string        `json:"source,omitempty"`
 	Rights          string        `json:"rights,omitempty"`
 	Subject         Subjects      `json:"subject,omitempty"`
-	BelongsTo       *BelongsTo    `json:"belongs_to,omitempty"`
+	BelongsTo       *BelongsTo    `json:"belongsTo,omitempty"`
 	Duration        int           `json:"duration,omitempty"`
 }
 

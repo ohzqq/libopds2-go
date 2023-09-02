@@ -369,8 +369,9 @@ func parsePublicationMetadata(metadata *PublicationMetadata, data any) {
 			metadata.Rights = cast.ToString(v)
 		case "subject":
 			metadata.Subject = parseSubs(v)
-		case "belongs_to":
+		case "belongs_to", "belongsTo":
 			belong := BelongsTo{}
+			fmt.Printf("%T\n", v)
 			infoB := cast.ToStringMap(v)
 			for kb, vb := range infoB {
 				switch kb {
@@ -421,7 +422,7 @@ func parseSubs(data any) Subjects {
 		c := parseSub(d)
 		cons = append(cons, c)
 		return cons
-	case []string:
+	case []any:
 		for _, con := range d {
 			cons = append(cons, parseSub(con))
 		}
@@ -458,7 +459,7 @@ func parseCollections(data any) Collections {
 		c := parseCollection(d)
 		cons = append(cons, c)
 		return cons
-	case []string:
+	case []any:
 		for _, con := range d {
 			cons = append(cons, parseCollection(con))
 		}
@@ -533,7 +534,7 @@ func parseCons(data any) Contributors {
 	case map[string]any:
 		c := parseCon(d)
 		cons = append(cons, c)
-	case []string:
+	case []any:
 		for _, con := range d {
 			cons = append(cons, parseCon(con))
 		}
