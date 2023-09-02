@@ -329,32 +329,32 @@ func parsePublicationMetadata(data any) PublicationMetadata {
 			metadata.Modified = parseDate(v)
 		case "type":
 			metadata.RDFType = cast.ToString(v)
-		case Author.String():
-			metadata.Author = Author.New(v)
-		case Translator.String():
-			metadata.Translator = Translator.New(v)
-		case Editor.String():
-			metadata.Editor = Editor.New(v)
-		case Artist.String():
-			metadata.Artist = Artist.New(v)
-		case Illustrator.String():
-			metadata.Illustrator = Illustrator.New(v)
-		case Letterer.String():
-			metadata.Letterer = Letterer.New(v)
-		case Penciler.String():
-			metadata.Penciler = Penciler.New(v)
-		case Colorist.String():
-			metadata.Colorist = Colorist.New(v)
-		case Inker.String():
-			metadata.Inker = Inker.New(v)
-		case Narrator.String():
-			metadata.Narrator = Narrator.New(v)
+		case "author":
+			metadata.Author = parseContributors(v)
+		case "translator":
+			metadata.Translator = parseContributors(v)
+		case "editor":
+			metadata.Editor = parseContributors(v)
+		case "artist":
+			metadata.Artist = parseContributors(v)
+		case "illustrator":
+			metadata.Illustrator = parseContributors(v)
+		case "letterer":
+			metadata.Letterer = parseContributors(v)
+		case "penciler":
+			metadata.Penciler = parseContributors(v)
+		case "colorist":
+			metadata.Colorist = parseContributors(v)
+		case "inker":
+			metadata.Inker = parseContributors(v)
+		case "narrator":
+			metadata.Narrator = parseContributors(v)
 		case "contributor":
 			metadata.Contributor = parseContributors(v)
-		case Publisher.String():
-			metadata.Publisher = Publisher.New(v)
-		case Imprint.String():
-			metadata.Imprint = Imprint.New(v)
+		case "publisher":
+			metadata.Publisher = parseContributors(v)
+		case "imprint":
+			metadata.Imprint = parseContributors(v)
 		case "language":
 			switch vb := v.(type) {
 			case string:
