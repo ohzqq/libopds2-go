@@ -81,6 +81,9 @@ func (publication *Publication) AddImage(data any) *Link {
 }
 
 func (publication *Publication) BelongsToSeries(data any) *Collection {
+	if publication.Metadata.BelongsTo == nil {
+		publication.Metadata.BelongsTo = &BelongsTo{}
+	}
 	col := parseCollection(data)
 	publication.Metadata.BelongsTo.Series = append(publication.Metadata.BelongsTo.Series, col)
 	return col
