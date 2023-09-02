@@ -304,6 +304,12 @@ func parsePublication(data any) Publication {
 	return p
 }
 
+func parsePublicationMeta(data any) PublicationMetadata {
+	metadata := PublicationMetadata{}
+	parsePublicationMetadata(&metadata, data)
+	return metadata
+}
+
 func parsePublicationMetadata(metadata *PublicationMetadata, data any) {
 	info := cast.ToStringMap(data)
 	for k, v := range info {
@@ -348,7 +354,7 @@ func parsePublicationMetadata(metadata *PublicationMetadata, data any) {
 			switch vb := v.(type) {
 			case string:
 				metadata.Language = append(metadata.Language, vb)
-			case []interface{}:
+			case []any:
 				for _, colls := range cast.ToStringSlice(vb) {
 					metadata.Language = append(metadata.Language, colls)
 				}
