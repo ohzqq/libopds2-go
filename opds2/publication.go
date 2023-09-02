@@ -1,6 +1,9 @@
 package opds2
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 // Publication is a collection for a given publication
 type Publication struct {
@@ -64,4 +67,35 @@ func (publication *Publication) BelongsToSeries(name any) *Collection {
 	col := parseCollection(name)
 	publication.Metadata.BelongsTo.Series = append(publication.Metadata.BelongsTo.Series, col)
 	return col
+}
+
+func (publication *Publication) FindFirstImageByRel(rel string) *Link {
+	for _, l := range publication.Images {
+		for _, r := range l.Rel {
+			if r == rel {
+				return l
+			}
+		}
+	}
+	return &Link{}
+}
+
+func (publication *Publication) FindFirstLinkByRel(rel string) *Link {
+	for _, l := range publication.Links {
+		for _, r := range l.Rel {
+			if r == rel {
+				return l
+			}
+		}
+	}
+	return &Link{}
+}
+
+func (publication *Publication) FindFirstLinkByType(mt string) *Link {
+	for _, l := range publication.Links {
+		if strings.Contains(l.TypeLink, mt) {
+			return l
+		}
+	}
+	return &Link{}
 }
