@@ -42,15 +42,20 @@ type PublicationMetadata struct {
 
 func NewPublication(meta any, links ...*Link) Publication {
 	if d, ok := meta.(string); ok {
-		var p Publication
-		p.Metadata = parsePublicationMetadata(d)
-		p.Links = links
-		return p
+		return Publication{
+			Metadata: parsePublicationMetadata(d),
+			Links:    links,
+		}
 	}
 	return parsePublication(meta)
 }
 
 func NewPublicationMetadata(data any) PublicationMetadata {
+	if d, ok := data.(string); ok {
+		return PublicationMetadata{
+			Title: parseMultiLanguage(d),
+		}
+	}
 	return parsePublicationMetadata(data)
 }
 

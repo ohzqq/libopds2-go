@@ -21,6 +21,11 @@ type Link struct {
 }
 
 func NewLink(data any) *Link {
+	if d, ok := data.(string); ok {
+		return &Link{
+			Href: d,
+		}
+	}
 	return parseLink(data)
 }
 

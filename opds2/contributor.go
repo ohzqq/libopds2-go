@@ -2,22 +2,22 @@ package opds2
 
 import "strings"
 
-type Role string
+//go:generate stringer -type Role -linecomment
+type Role int
 
 const (
-	Author             Role = "author"
-	Translator         Role = "translator"
-	Editor             Role = "editor"
-	Artist             Role = "artist"
-	Illustrator        Role = "illustrator"
-	Letterer           Role = "letterer"
-	Penciler           Role = "penciler"
-	Colorist           Role = "colorist"
-	Inker              Role = "inker"
-	Narrator           Role = "narrator"
-	Publisher          Role = "publisher"
-	Imprint            Role = "imprint"
-	GenericContributor Role = "contributor"
+	Author      Role = iota + 1 // author
+	Translator                  // translator
+	Editor                      // editor
+	Artist                      // artist
+	Illustrator                 // illustrator
+	Letterer                    // letterer
+	Penciler                    // penciler
+	Colorist                    // colorist
+	Inker                       // inker
+	Narrator                    // narrator
+	Publisher                   // publisher
+	Imprint                     // imprint
 )
 
 // Contributor Slice
@@ -33,7 +33,7 @@ type Contributor struct {
 }
 
 func NewContributor(con any) Contributors {
-	return parseCons(con)
+	return parseContributors(con)
 }
 
 func (c Contributors) StringSlice() []string {
@@ -48,10 +48,12 @@ func (c Contributors) String() string {
 	return strings.Join(c.StringSlice(), " & ")
 }
 
-func (r Role) New(con any) Contributors {
-	c := parseCons(con)
+func (role Role) New(con any) Contributors {
+	c := parseContributors(con)
 	for i := range c {
-		c[i].Role = string(r)
+		if c[i].Role == "" {
+			c[i].Role = role.String()
+		}
 	}
 	return c
 }

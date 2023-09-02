@@ -14,7 +14,7 @@ type Subject struct {
 }
 
 func NewSubject(con any) Subjects {
-	return parseSubs(con)
+	return parseSubjects(con)
 }
 
 func (s Subjects) StringSlice() []string {

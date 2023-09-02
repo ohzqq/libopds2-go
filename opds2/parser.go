@@ -316,91 +316,84 @@ func parsePublication(data any) Publication {
 
 func parsePublicationMetadata(data any) PublicationMetadata {
 	metadata := PublicationMetadata{}
-	switch v := data.(type) {
-	case string:
-		metadata.Title = parseMultiLanguage(v)
-		return metadata
-	default:
-		info := cast.ToStringMap(data)
-		for k, v := range info {
-			switch k {
-			case "title": // handle multistring
-				metadata.Title = parseMultiLanguage(v)
-			case "identifier":
-				metadata.Identifier = cast.ToString(v)
-			case "@type":
-				metadata.RDFType = cast.ToString(v)
-			case "modified":
-				metadata.Modified = parseDate(v)
-			case "type":
-				metadata.RDFType = cast.ToString(v)
-			case "author":
-				metadata.Author = Author.New(v)
-			case "translator":
-				metadata.Translator = Translator.New(v)
-			case "editor":
-				metadata.Editor = Editor.New(v)
-			case "artist":
-				metadata.Artist = Artist.New(v)
-			case "illustrator":
-				metadata.Illustrator = Illustrator.New(v)
-			case "letterer":
-				metadata.Letterer = Letterer.New(v)
-			case "penciler":
-				metadata.Penciler = Penciler.New(v)
-			case "colorist":
-				metadata.Colorist = Colorist.New(v)
-			case "inker":
-				metadata.Inker = Inker.New(v)
-			case "narrator":
-				metadata.Narrator = Narrator.New(v)
-			case "contributor":
-				metadata.Contributor = parseCons(v)
-			case "publisher":
-				metadata.Publisher = Publisher.New(v)
-			case "imprint":
-				metadata.Imprint = Imprint.New(v)
-			case "language":
-				switch vb := v.(type) {
-				case string:
-					metadata.Language = append(metadata.Language, vb)
-				case []any:
-					for _, colls := range cast.ToStringSlice(vb) {
-						metadata.Language = append(metadata.Language, colls)
-					}
+	info := cast.ToStringMap(data)
+	for k, v := range info {
+		switch k {
+		case "title":
+			metadata.Title = parseMultiLanguage(v)
+		case "identifier":
+			metadata.Identifier = cast.ToString(v)
+		case "@type":
+			metadata.RDFType = cast.ToString(v)
+		case "modified":
+			metadata.Modified = parseDate(v)
+		case "type":
+			metadata.RDFType = cast.ToString(v)
+		case Author.String():
+			metadata.Author = Author.New(v)
+		case Translator.String():
+			metadata.Translator = Translator.New(v)
+		case Editor.String():
+			metadata.Editor = Editor.New(v)
+		case Artist.String():
+			metadata.Artist = Artist.New(v)
+		case Illustrator.String():
+			metadata.Illustrator = Illustrator.New(v)
+		case Letterer.String():
+			metadata.Letterer = Letterer.New(v)
+		case Penciler.String():
+			metadata.Penciler = Penciler.New(v)
+		case Colorist.String():
+			metadata.Colorist = Colorist.New(v)
+		case Inker.String():
+			metadata.Inker = Inker.New(v)
+		case Narrator.String():
+			metadata.Narrator = Narrator.New(v)
+		case "contributor":
+			metadata.Contributor = parseContributors(v)
+		case Publisher.String():
+			metadata.Publisher = Publisher.New(v)
+		case Imprint.String():
+			metadata.Imprint = Imprint.New(v)
+		case "language":
+			switch vb := v.(type) {
+			case string:
+				metadata.Language = append(metadata.Language, vb)
+			case []any:
+				for _, colls := range cast.ToStringSlice(vb) {
+					metadata.Language = append(metadata.Language, colls)
 				}
-			case "published":
-				metadata.PublicationDate = parseDate(v)
-			case "description":
-				metadata.Description = cast.ToString(v)
-			case "source":
-				metadata.Source = cast.ToString(v)
-			case "rights":
-				metadata.Rights = cast.ToString(v)
-			case "subject":
-				metadata.Subject = parseSubs(v)
-			case "belongs_to", "belongsTo":
-				belong := BelongsTo{}
-				infoB := cast.ToStringMap(v)
-				for kb, vb := range infoB {
-					switch kb {
-					case "series":
-						belong.Series = parseCollections(vb)
-					case "collection":
-						belong.Collection = parseCollections(vb)
-					}
-				}
-				metadata.BelongsTo = &belong
-			case "duration":
-				metadata.Duration = cast.ToInt(v)
 			}
+		case "published":
+			metadata.PublicationDate = parseDate(v)
+		case "description":
+			metadata.Description = cast.ToString(v)
+		case "source":
+			metadata.Source = cast.ToString(v)
+		case "rights":
+			metadata.Rights = cast.ToString(v)
+		case "subject":
+			metadata.Subject = parseSubjects(v)
+		case "belongs_to", "belongsTo":
+			belong := BelongsTo{}
+			infoB := cast.ToStringMap(v)
+			for kb, vb := range infoB {
+				switch kb {
+				case "series":
+					belong.Series = parseCollections(vb)
+				case "collection":
+					belong.Collection = parseCollections(vb)
+				}
+			}
+			metadata.BelongsTo = &belong
+		case "duration":
+			metadata.Duration = cast.ToInt(v)
 		}
-		return metadata
 	}
 	return metadata
 }
 
-func parseSub(data any) *Subject {
+func parseSubject(data any) *Subject {
 	c := &Subject{}
 	switch d := data.(type) {
 	case string:
@@ -423,25 +416,25 @@ func parseSub(data any) *Subject {
 	return c
 }
 
-func parseSubs(data any) Subjects {
+func parseSubjects(data any) Subjects {
 	var cons Subjects
 	switch d := data.(type) {
 	case string:
-		c := parseSub(d)
+		c := parseSubject(d)
 		cons = append(cons, c)
 		return cons
 	case map[string]any:
-		c := parseSub(d)
+		c := parseSubject(d)
 		cons = append(cons, c)
 		return cons
 	case []any:
 		for _, con := range d {
-			cons = append(cons, parseSub(con))
+			cons = append(cons, parseSubject(con))
 		}
 		return cons
 	case []map[string]any:
 		for _, con := range d {
-			cons = append(cons, parseSub(con))
+			cons = append(cons, parseSubject(con))
 		}
 		return cons
 	}
@@ -450,7 +443,7 @@ func parseSubs(data any) Subjects {
 
 func parseCollection(data any) *Collection {
 	collection := &Collection{
-		Contributor: parseCon(data),
+		Contributor: parseContributor(data),
 	}
 
 	info := cast.ToStringMap(data)
@@ -508,7 +501,7 @@ func parseDate(data any) *time.Time {
 	return &t
 }
 
-func parseCon(data any) *Contributor {
+func parseContributor(data any) *Contributor {
 	switch d := data.(type) {
 	case string:
 		c := &Contributor{}
@@ -536,22 +529,22 @@ func parseCon(data any) *Contributor {
 	return &Contributor{}
 }
 
-func parseCons(data any) Contributors {
+func parseContributors(data any) Contributors {
 	var cons Contributors
 	switch d := data.(type) {
 	case string:
-		c := parseCon(d)
+		c := parseContributor(d)
 		cons = append(cons, c)
 	case map[string]any:
-		c := parseCon(d)
+		c := parseContributor(d)
 		cons = append(cons, c)
 	case []any:
 		for _, con := range d {
-			cons = append(cons, parseCon(con))
+			cons = append(cons, parseContributor(con))
 		}
 	case []map[string]any:
 		for _, con := range d {
-			cons = append(cons, parseCon(con))
+			cons = append(cons, parseContributor(con))
 		}
 	}
 	return cons
